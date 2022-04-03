@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import Header from './components/Header';
-import CustomCard from "./components/Card";
+import Header from '../components/Header';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
+import HomePage from "../components/HomePage";
+import {BrowserRouter as Router, Switch, Route, Redirect,} from "react-router-dom";
+import Card from "../components/Card";
+import data from '../data.json';
 
 function App() {
 
@@ -12,10 +15,10 @@ function App() {
 
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet();
-    const contractAddress = "terra1e8jzqkmq5rfrsp2ttnnzvrqzh2vnvyrfjaguma";
+    const contractAddress = "terra14e0u4xwmgvq28x3fwszhue3hx4w8la3rng3rxr";
 
     useEffect(() => {
-        if (connectedWallet) {
+        /*if (connectedWallet) {
             setWalletAddress(connectedWallet.walletAddress);
 
             lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
@@ -23,42 +26,56 @@ function App() {
                 setBalance(balance.toLocaleString());
             }).catch((error) => console.log(error));
 
-            /*lcd.wasm.contractQuery(contractAddress, {
-                deposit_balance: {
-                    address: connectedWallet.walletAddress, passphrase: "2"
+            lcd.wasm.contractQuery(contractAddress, {
+                depositor_balance: {
+                    address: connectedWallet.walletAddress
                 }
             }).then((r) => {
                 const array = [];
-                array.push(r);
+                r.map(item => array.push(item[1]));
                 setOutgoingPayments(array);
-            }).catch((error) => console.log(error));*/
+            }).catch((error) => console.log(error));
 
-            /*lcd.wasm.contractQuery(contractAddress, {
-                withdrawable_interest: {
-                    sender: connectedWallet.walletAddress, passphrase: "2"
+            lcd.wasm.contractQuery(contractAddress, {
+                beneficiary_balance: {
+                    address: connectedWallet.walletAddress
                 }
             }).then((r) => {
-                console.log(r);
-            }).catch((error) => console.log(error));*/
-        }
+                const array = [];
+                r.map(item => array.push(item[1]));
+                setIncomingPayments(array);
+            }).catch((error) => console.log(error));
+        }*/
+        const array = [];
+        data.map(item => array.push(item[1]));
+        setIncomingPayments(array);
     }, [connectedWallet, lcd]);
 
-    return (<div style={appStyle} className='App'>
-        <Header walletAddress={walletAddress}
-                balanceAmount={balance}/>
-        <CustomCard name={"Ongoing Donations"}
-                    description={"Here's a list of your outgoing payments"}
-                    items={outgoingPayments}
-                    buttonName={"Withdraw"}/>
-        <CustomCard name={"Incoming Donations"}
-                    description={"Here's a list of your incoming payments"}
-                    items={incomingPayments}
-                    buttonName={"Claim"}/>
-    </div>);
+    return (
+        <div style={appStyle} className='App'>
+            <Header walletAddress={walletAddress} balanceAmount={balance}/>
+            <Router>
+                <Switch>
+                    <Route path="/home">
+                        <HomePage />
+                    </Route>
+                    <Route path="/outgoing-payments">
+                        <Card items={incomingPayments} type={"OUTGOING"} />
+                    </Route>
+                    <Route path="/incoming-payments">
+                        <Card items={incomingPayments} type={"INCOMING"} />
+                    </Route>
+                    <Route>
+                        <Redirect to="/home" />
+                    </Route>
+                </Switch>
+            </Router>
+        </div>
+    );
 }
 
 const appStyle = {
-    height: "100vh", backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif"
+    backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif", fontWeight: "Bold"
 }
 
 export default App;

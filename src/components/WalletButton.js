@@ -3,7 +3,7 @@ import truncateAddress from "./Utility";
 
 const WalletButton = ({walletAddress, balanceAmount, coinType, onClick}) => {
     return (
-        <button className={"btn btn-dark custom-wallet-btn"}
+        <button className={"btn btn-dark custom-btn-wallet"}
                 onClick={onClick}>
             <span>{truncateAddress(walletAddress)}</span>
             <span className={"divider"}>|</span>
