@@ -1,4 +1,4 @@
-import {Button, Container, Modal, Nav, Navbar, NavItem} from "react-bootstrap";
+import {Button, Container, Modal, Nav, Navbar} from "react-bootstrap";
 import './Header.css';
 import {useState} from "react";
 import {useWallet, WalletStatus} from '@terra-money/wallet-provider';
@@ -22,10 +22,17 @@ function Header({walletAddress, balanceAmount}) {
                     Pluton Protocol
                 </Navbar.Brand>
                 <Navbar.Collapse>
-                    <Nav className="col-4">
-                        <Nav.Link href="/outgoing-payments">Payments</Nav.Link>
-                        <Nav.Link href="/incoming-donations">Donations</Nav.Link>
-                    </Nav>
+                    {status === WalletStatus.WALLET_NOT_CONNECTED && (
+                        <Nav className="col-4"/>
+                    )}
+
+                    {status === WalletStatus.WALLET_CONNECTED && (
+                        <Nav className="col-4">
+                            <Nav.Link href="/outgoing-payments">Payments</Nav.Link>
+                            <Nav.Link href="/incoming-donations">Donations</Nav.Link>
+                        </Nav>
+                    )}
+
                     <Nav className="col-8 justify-content-end">
                         {status === WalletStatus.WALLET_NOT_CONNECTED && (
                             <Nav.Item>
@@ -52,7 +59,8 @@ function Header({walletAddress, balanceAmount}) {
                             {availableConnections.map(({type, name, icon, identifier = ''}) => (
                                 <button className="wallet-btn" key={'connection-' + type + identifier} onClick={() => {
                                     connect(type, identifier)
-                                    handleClose()}}>{name}
+                                    handleClose()
+                                }}>{name}
                                     <img src={icon} alt={name} style={{width: '1em', height: '1em'}}/>
                                 </button>))
                             }</>)
