@@ -5,7 +5,6 @@ import HomePage from "../components/HomePage"
 import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom"
 import Card from "../components/Card"
 import data from '../data.json'
-import {Payment} from "../models/Payment";
 
 function App() {
     const [incomingPayments, setIncomingPayments] = useState([])
@@ -34,15 +33,8 @@ function App() {
                     setBalance(balance.toLocaleString());
                 }).catch((error) => console.log(error));
 
-                /*lcd.wasm.contractQuery(contractAddress, {
-                    depositor_balance: {
-                        address: connectedWallet.walletAddress
-                    }
-                }).then((r) => {
-                    const array = [];
-                    r.map(item => array.push(item[1]));
-                    setOutgoingPayments(array);
-                }).catch((error) => console.log(error));
+                const commonToken = [{token: "bLuna", address: "terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x"},
+                    {token: "ANC", address: "terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc"}]
 
                 lcd.wasm.contractQuery(contractAddress, {
                     beneficiary_balance: {
@@ -52,7 +44,7 @@ function App() {
                     const array = [];
                     r.map(item => array.push(item[1]));
                     setIncomingPayments(array);
-                }).catch((error) => console.log(error));*/
+                }).catch((error) => console.log(error));
             }
         }
 

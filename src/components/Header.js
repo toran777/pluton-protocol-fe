@@ -2,51 +2,42 @@ import {Button, Container, Modal, Nav, Navbar} from "react-bootstrap";
 import './Header.css';
 import {useState} from "react";
 import {useWallet, WalletStatus} from '@terra-money/wallet-provider';
-import WalletButton from "./WalletButton";
-import './WalletButton.css';
+import truncateAddress from "./Utility";
 
 function Header({walletAddress, balanceAmount}) {
-    const {
-        status, availableConnections, connect, disconnect,
-    } = useWallet();
+    const {status, availableConnections, connect, disconnect,} = useWallet();
 
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    return (
-        <Navbar variant="light" className="bg-transparent">
+    return (<Navbar variant="light" className="bg-transparent">
             <Container>
-                <Navbar.Brand href="/">
-                    Pluton Protocol
-                </Navbar.Brand>
+                <Navbar.Brand href="/">Pluton Protocol</Navbar.Brand>
                 <Navbar.Collapse>
-                    {status === WalletStatus.WALLET_NOT_CONNECTED && (
-                        <Nav className="col-4"/>
-                    )}
+                    {status === WalletStatus.WALLET_NOT_CONNECTED && (<Nav className="col-4"/>)}
 
-                    {status === WalletStatus.WALLET_CONNECTED && (
-                        <Nav className="col-4">
+                    {status === WalletStatus.WALLET_CONNECTED && (<Nav className="col-4">
                             <Nav.Link href="/outgoing-payments">Payments</Nav.Link>
                             <Nav.Link href="/incoming-donations">Donations</Nav.Link>
-                        </Nav>
-                    )}
+                        </Nav>)}
 
                     <Nav className="col-8 justify-content-end">
-                        {status === WalletStatus.WALLET_NOT_CONNECTED && (
-                            <Nav.Item>
-                                <Button className={"btn btn-dark custom-btn"} onClick={handleShow}>Connect</Button>
-                            </Nav.Item>)
-                        }
-                        {status === WalletStatus.WALLET_CONNECTED && (
-                            <Nav.Item>
-                                <WalletButton onClick={() => {
-                                    disconnect()
-                                    handleClose()
-                                }} walletAddress={walletAddress} balanceAmount={balanceAmount} coinType={"UST"}/>
-                            </Nav.Item>)
-                        }
+                        {status === WalletStatus.WALLET_NOT_CONNECTED && (<Nav.Item>
+                            <Button className={"btn btn-dark custom-btn"} onClick={handleShow}>Connect</Button>
+                        </Nav.Item>)}
+                        {status === WalletStatus.WALLET_CONNECTED && (<Nav.Item>
+                            <button className={"btn btn-dark custom-btn-wallet"} onClick={() => {
+                                disconnect()
+                                handleClose()
+                            }}>
+                                <span>{truncateAddress(walletAddress)}</span>
+                                <span className={"divider"}>|</span>
+                                <span className={"balance-amount"}>{balanceAmount}</span>
+                                <span className={"coin-type"}>UST</span>
+                            </button>
+                        </Nav.Item>)}
                     </Nav>
                 </Navbar.Collapse>
 
@@ -62,14 +53,11 @@ function Header({walletAddress, balanceAmount}) {
                                     handleClose()
                                 }}>{name}
                                     <img src={icon} alt={name} style={{width: '1em', height: '1em'}}/>
-                                </button>))
-                            }</>)
-                        }
+                                </button>))}</>)}
                     </Modal.Body>
                 </Modal>
             </Container>
-        </Navbar>
-    );
+        </Navbar>);
 }
 
 export default Header;
