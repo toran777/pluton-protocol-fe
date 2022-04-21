@@ -21,6 +21,7 @@ function Header({walletAddress, balanceAmount}) {
                     {status === WalletStatus.WALLET_CONNECTED && (<Nav className="col-4">
                             <Nav.Link href="/outgoing-payments">Payments</Nav.Link>
                             <Nav.Link href="/incoming-donations">Donations</Nav.Link>
+                            <Nav.Link href="/profile">Profile</Nav.Link>
                         </Nav>)}
 
                     <Nav className="col-8 justify-content-end">

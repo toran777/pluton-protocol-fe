@@ -4,7 +4,7 @@ import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
 import HomePage from "../components/HomePage"
 import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom"
 import Card from "../components/Card"
-import data from '../data.json'
+import { Profile } from "../components/Profile"
 
 function App() {
     const [incomingPayments, setIncomingPayments] = useState([])
@@ -15,28 +15,37 @@ function App() {
 
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet()
-    const contractAddress = "terra14e0u4xwmgvq28x3fwszhue3hx4w8la3rng3rxr"
+    const depositContract = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
+
 
     useEffect(() => {
         const getPayments = async () => {
             if (connectedWallet) {
                 const array = []
-                data.map(item => array.push(item[1]))
 
                 setIncomingPayments(array)
                 setFetchPayments(false)
 
                 setWalletAddress(connectedWallet.walletAddress);
-
+                // Query wallet balance
                 lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
                     const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount);
                     setBalance(balance.toLocaleString());
                 }).catch((error) => console.log(error));
+                
+                // Query depositor balance
+                lcd.wasm.contractQuery(depositContract, {
+                    depositor_balance: {
+                        address: connectedWallet.walletAddress
+                    }
+                }).then((r) => {
+                    const array = [];
+                    r.map(item => array.push(item[1]));
+                    setOutgoingPayments(array);
+                }).catch((error) => console.log(error));
 
-                const commonToken = [{token: "bLuna", address: "terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x"},
-                    {token: "ANC", address: "terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc"}]
-
-                lcd.wasm.contractQuery(contractAddress, {
+                // Query beneficiary balance
+                lcd.wasm.contractQuery(depositContract, {
                     beneficiary_balance: {
                         address: connectedWallet.walletAddress
                     }
@@ -45,6 +54,7 @@ function App() {
                     r.map(item => array.push(item[1]));
                     setIncomingPayments(array);
                 }).catch((error) => console.log(error));
+
             }
         }
 
@@ -61,10 +71,16 @@ function App() {
                         <HomePage/>
                     </Route>
                     <Route path="/outgoing-payments">
+                        <Card items={outgoingPayments} type={"OUTGOING"}/>
+                    </Route>
+                    <Route path="/incoming-donations">
                         <Card items={incomingPayments} type={"INCOMING"}/>
                     </Route>
-                    <Route path="/incoming-payments">
-                        <Card items={incomingPayments} type={"INCOMING"}/>
+                    <Route path="/profile/">
+                        <Profile address = {walletAddress}/>
+                    </Route>
+                    <Route path="/user/">
+                        <Profile address = {walletAddress}/>
                     </Route>
                     <Route>
                         <Redirect to="/home"/>
@@ -76,7 +92,7 @@ function App() {
 }
 
 const appStyle = {
-    backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif", fontWeight: "Bold"
+    backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif", fontWeight: "Bold", height: "100vh"
 }
 
 export default App;

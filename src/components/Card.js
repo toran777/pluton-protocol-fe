@@ -3,13 +3,19 @@ import './Card.css';
 import PropTypes from "prop-types";
 import truncateAddress from "./Utility";
 import {useState} from "react";
+import DepositDialog from "./DepositDialog";
+import {Grid, Button} from "@material-ui/core";
+import useWithdraw from "./Withdraw";
 
 const CustomCard = ({items, type}) => {
     const itemsPerPage = 10
     const lastPage = Math.floor(items.length / itemsPerPage + 1)
     const [currentPage, setCurrentPage] = useState(1)
-    let currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    const [modalShow, setModalShow] = useState(false);
+    const { withdraw } = useWithdraw()
 
+    let currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    
     function goToFirstPage() {
         setCurrentPage(1)
     }
@@ -42,11 +48,11 @@ const CustomCard = ({items, type}) => {
                             </thead>
                             <tbody>
                             {currentItems.map((item) => (<tr className={"col-12"}>
-                                <td className={"col-4"}>{truncateAddress(item.beneficiary_addr)}</td>
+                                <td className={"col-4"}>{truncateAddress(item.depositor_addr)}</td>
                                 <td className={"col-4 text-center"}>{item.amount / 1000000}</td>
-                                <td className={"col-4 text-center"}>
-                                    <button className={"custom-btn text-white"}>Claim</button>
-                                </td>
+                                <Grid container justify="center">
+                                    <Button onClick={() => withdraw(item.id)} className={"custom-btn text-white"}>Claim</Button>
+                                </Grid>
                             </tr>))}
                             </tbody>
                         </Table>
@@ -69,9 +75,9 @@ const CustomCard = ({items, type}) => {
                             {currentItems.length > 0 && currentItems.map((item) => (<tr className={"col-12"}>
                                 <td className={"col-4"}>{truncateAddress(item.beneficiary_addr)}</td>
                                 <td className={"col-4 text-center"}>{item.amount / 1000000}</td>
-                                <td className={"col-4 text-center"}>
-                                    <button className={"custom-btn text-white"}>Withdraw</button>
-                                </td>
+                                <Grid container justify="center">
+                                    <Button onClick={() => withdraw(item.id)} className={"custom-btn text-white"}>Withdraw</Button>
+                                </Grid>
                             </tr>))}
                             </tbody>
                         </Table>
@@ -89,6 +95,10 @@ const CustomCard = ({items, type}) => {
                 {currentPage < lastPage - 1 && <Pagination.Item onClick={goToLastPage}>{lastPage}</Pagination.Item>}
                 {currentPage < lastPage - 1 && <Pagination.Next onClick={goToNextPage}/>}
             </Pagination>
+            <Grid container justify="center">
+                <Button variant = "contained" onClick={() => setModalShow(true)}>Fund</Button>
+                <DepositDialog show={modalShow} onHide={() => setModalShow(false)}/>
+            </Grid>
         </Container>)
 }
 

@@ -34,6 +34,7 @@
     ]
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.4",
     "@terra-money/terra.js": "^3.0.2",
     "@terra-money/wallet-provider": "^3.6.5",
     "bootstrap": "^5.1.3",
