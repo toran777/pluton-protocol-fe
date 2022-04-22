@@ -9,8 +9,6 @@ export function useWithdraw() {
   const withdraw = (id) => {
     
     if (connectedWallet) {
-
-    
         connectedWallet
         .post({
             msgs: [

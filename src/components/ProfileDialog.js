@@ -1,10 +1,9 @@
 import {Modal, Form} from "react-bootstrap";
 import {Grid, Button} from "@material-ui/core";
-import {useDeposit} from "./Deposit";
 import {useState} from "react";
 import {useRegister} from "./Register";
 
-function DepositDialog(props) {
+function ProfileDialog(props) {
     const [profile, setProfile] = useState({img: "", name: "", description: "", github: "", linkedin: "", twitter: ""}) 
     const { register } = useRegister()
   return (
@@ -57,4 +56,4 @@ function DepositDialog(props) {
 }
 
 
-export default DepositDialog;
+export default ProfileDialog;
