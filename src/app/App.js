@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react'
-import Header from '../components/Header'
-import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
-import HomePage from "../components/HomePage"
-import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom"
-import Card from "../components/Card"
-import { Profile } from "../components/Profile"
+import React, {useEffect, useState} from 'react';
+import Header from '../components/Header';
+import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
+import HomePage from "../components/HomePage";
+import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom";
+import Card from "../components/Card";
+import {Profile} from "../components/Profile";
+import './App.css';
 
 function App() {
     const [incomingPayments, setIncomingPayments] = useState([])
@@ -16,7 +17,6 @@ function App() {
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet()
     const depositContract = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
-
 
     useEffect(() => {
         const getPayments = async () => {
@@ -32,7 +32,7 @@ function App() {
                     const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount);
                     setBalance(balance.toLocaleString());
                 }).catch((error) => console.log(error));
-                
+
                 // Query depositor balance
                 lcd.wasm.contractQuery(depositContract, {
                     depositor_balance: {
@@ -63,10 +63,9 @@ function App() {
     }, [fetchPayments, connectedWallet, lcd]);
 
     return (
-        <div style={appStyle} className='App'>
-            <Header walletAddress={walletAddress} balanceAmount={balance}/>
-
+        <div className='App'>
             <Router>
+                <Header walletAddress={walletAddress} balanceAmount={balance}/>
                 <Switch>
                     <Route path="/home">
                         <HomePage/>
@@ -77,11 +76,7 @@ function App() {
                     <Route path="/incoming-donations">
                         <Card items={incomingPayments} type={"INCOMING"}/>
                     </Route>
-                    <Route path="/profile/">
-                        <Profile address = {walletAddress}/>
-                    </Route>
-                    <Route path="/user/">
-                        <Profile address = {walletAddress}/>
+                    <Route path="/profile/:address" component={Profile}>
                     </Route>
                     <Route>
                         <Redirect to="/home"/>
@@ -90,10 +85,6 @@ function App() {
             </Router>
         </div>
     );
-}
-
-const appStyle = {
-    backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif", fontWeight: "Bold", height: "100vh"
 }
 
 export default App;

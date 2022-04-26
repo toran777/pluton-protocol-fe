@@ -65,7 +65,7 @@ function HomePage() {
             <div className="row mt-5" />
             <div className="row col-12 mt-5 p-5 custom-card-homepage">
                 <div className="col-7">
-                    <img className="col-12" src={"pig.jpg"} alt="timber image"/>
+                    <img className="col-12" src={"pig.png"} alt="timber image"/>
                 </div>
                 <div className="row col-5 p-3">
                     <h4><b>Step 1</b></h4>

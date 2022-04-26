@@ -1,8 +1,8 @@
 .App {
-  text-align: center;
   background-color: #EDEDED;
   font-family: Poppins, sans-serif;
   font-weight: bold;
+  min-height: 100vh;
 }
 
 .App-logo {

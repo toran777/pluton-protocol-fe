@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import truncateAddress from "./Utility";
 import {useState} from "react";
 import useWithdraw from "./Withdraw";
-import Skeleton from "react-loading-skeleton";
+import {Skeleton} from "@mui/material";
+import DepositDialog from "./DepositDialog";
 
 const CustomCard = ({items, type}) => {
     const itemsPerPage = 10
@@ -12,6 +13,7 @@ const CustomCard = ({items, type}) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [modalShow, setModalShow] = useState(false);
     const {withdraw} = useWithdraw()
+    const placeholders = [1,2,3]
 
     let currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
@@ -31,19 +33,48 @@ const CustomCard = ({items, type}) => {
         setCurrentPage(lastPage)
     }
 
-    let body = "";
+    let body
+    let loading
 
     if (currentItems.length > 0) {
-        body = currentItems.map((item) => (<tr className={"col-12"}>
-            <td className={"col-4"}>{truncateAddress(item.depositor_addr)}</td>
-            <td className={"col-4 text-center"}>{item.amount / 1000000}</td>
-            <td className={"col-4 text-center"}>
-                <button onClick={() => withdraw(item.id)}
-                        className={"custom-btn text-white"}>Claim
-                </button>
-            </td>
-        </tr>))
+        loading = false
+        if (type === 'OUTGOING')
+            body = currentItems.map((item) => (
+                <tr className={"col-12"}>
+                    <td className={"col-3"}>
+                        <a href={"https://terrasco.pe/mainnet/address/" + item.beneficiary_addr}>{truncateAddress(item.beneficiary_addr)}</a>
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        {item.amount / 1000000 + " UST"}
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        {item.beneficiary_amount + " UST"}
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        <button onClick={() => withdraw(item.id)} className={"custom-btn text-white"}>
+                            Withdraw
+                        </button>
+                    </td>
+                </tr>
+            ))
     } else {
+        loading = true
+        body = placeholders.map((item) => (
+            <tr key={item} className={"col-12"}>
+                <td className={"col-3"}>
+                    <Skeleton />
+                </td>
+                <td className={"col-3"}>
+                    <Skeleton />
+                </td>
+                <td className={"col-3"}>
+                    <Skeleton />
+                </td>
+                <td className={"col-3"}>
+                    <Skeleton />
+                </td>
+            </tr>
+        ))
     }
 
     return (<Container className={"mt-4 col-6"}>
@@ -57,19 +88,11 @@ const CustomCard = ({items, type}) => {
                         <tr className={"col-12"}>
                             <th className={"col-4"}>From</th>
                             <th className={"col-4 text-center"}>Amount</th>
-                            <th className={"col-4 text-center"}>Claim</th>
+                            <th className={"col-4 text-center"}>Withdraw</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {currentItems.map((item) => (<tr className={"col-12"}>
-                            <td className={"col-4"}>{truncateAddress(item.depositor_addr)}</td>
-                            <td className={"col-4 text-center"}>{item.amount / 1000000}</td>
-                            <td className={"col-4 text-center"}>
-                                <button onClick={() => withdraw(item.id)}
-                                        className={"custom-btn text-white"}>Claim
-                                </button>
-                            </td>
-                        </tr>))}
+                        {body}
                         </tbody>
                     </Table>
                 </Card.Body>
@@ -82,9 +105,10 @@ const CustomCard = ({items, type}) => {
                     <Table borderless={true}>
                         <thead className={"custom-header"}>
                         <tr className={"col-12"}>
-                            <th className={"col-4"}>To</th>
-                            <th className={"col-4 text-center"}>Amount</th>
-                            <th className={"col-4 text-center"}>Withdraw</th>
+                            <th className={"col-3"}>To</th>
+                            <th className={"col-3 text-center"}>Amount</th>
+                            <th className={"col-3 text-center"}>Lock Amount</th>
+                            <th className={"col-3 text-center"}>Withdraw</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -94,22 +118,25 @@ const CustomCard = ({items, type}) => {
                 </Card.Body>
             </Card>
         </>)}
-        <Pagination className="mt-2 pb-2 custom-pagination justify-content-center">
-            {currentPage > 1 && <Pagination.Prev onClick={goToPreviousPage}/>}
-            {currentPage > 2 && <Pagination.Item onClick={goToFirstPage}>{1}</Pagination.Item>}
-            {currentPage > 2 && <Pagination.Ellipsis/>}
-            {currentPage > 1 && <Pagination.Item onClick={goToPreviousPage}>{currentPage - 1}</Pagination.Item>}
-            <Pagination.Item active>{currentPage}</Pagination.Item>
-            {currentPage < lastPage && <Pagination.Item onClick={goToNextPage}>{currentPage + 1}</Pagination.Item>}
-            {currentPage < lastPage - 1 && <Pagination.Ellipsis/>}
-            {currentPage < lastPage - 1 && <Pagination.Item onClick={goToLastPage}>{lastPage}</Pagination.Item>}
-            {currentPage < lastPage - 1 && <Pagination.Next onClick={goToNextPage}/>}
-        </Pagination>
-        <div className={"row mt-2 justify-content-center"}>
+        {
+            !loading && lastPage > 1 && <Pagination className="mt-2 pb-2 custom-pagination justify-content-center">
+                {currentPage > 1 && <Pagination.Prev onClick={goToPreviousPage}/>}
+                {currentPage > 2 && <Pagination.Item onClick={goToFirstPage}>{1}</Pagination.Item>}
+                {currentPage > 2 && <Pagination.Ellipsis/>}
+                {currentPage > 1 && <Pagination.Item onClick={goToPreviousPage}>{currentPage - 1}</Pagination.Item>}
+                <Pagination.Item active>{currentPage}</Pagination.Item>
+                {currentPage < lastPage && <Pagination.Item onClick={goToNextPage}>{currentPage + 1}</Pagination.Item>}
+                {currentPage < lastPage - 1 && <Pagination.Ellipsis/>}
+                {currentPage < lastPage - 1 && <Pagination.Item onClick={goToLastPage}>{lastPage}</Pagination.Item>}
+                {currentPage < lastPage - 1 && <Pagination.Next onClick={goToNextPage}/>}
+            </Pagination>
+        }
+        <div className={"row mt-5 justify-content-center"}>
             <div className={"col-5"}></div>
-            <button className={"custom-btn text-white col-2"} onClick={() => setModalShow(true)}>Fund</button>
+            <button className={"option-btn text-black col-2"} onClick={() => setModalShow(true)}>Fund</button>
             <div className={"col-5"}></div>
         </div>
+        <DepositDialog show={modalShow} onHide={() => setModalShow(false)}/>
     </Container>)
 }
 
