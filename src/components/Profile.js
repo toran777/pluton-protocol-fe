@@ -5,9 +5,12 @@ import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
 import ProfileDialog from "./ProfileDialog";
 
 
-export function Profile({address}) {
+export function Profile(address) {
     
-    const lcd = useLCDClient();
+    const lcd = useLCDClient({
+        URL: 'https://bombay-lcd.terra.dev',
+        chainID: 'bombay-12',
+     });
     const [item, setItem] = useState({name: "", github: "", linkedin: "", twitter: ""});
     const [fetchQuery, setFetchQuery] = useState(true)
     const [modalShow, setModalShow] = useState(false);
@@ -17,6 +20,7 @@ export function Profile({address}) {
 
     const get_profile = async () => {
         setFetchQuery(false)
+        console.log(address)
         // Query profile info
         lcd.wasm.contractQuery(contractAddress, {
             get_profile: {
@@ -26,7 +30,7 @@ export function Profile({address}) {
             }).catch((error) => console.log(error));
     }
 
-    fetchQuery && get_profile()
+    fetchQuery && address && get_profile()
 
     return(
         <Container className={"mt-4 col-4"}>

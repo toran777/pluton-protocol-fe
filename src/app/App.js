@@ -65,6 +65,7 @@ function App() {
     return (
         <div style={appStyle} className='App'>
             <Header walletAddress={walletAddress} balanceAmount={balance}/>
+
             <Router>
                 <Switch>
                     <Route path="/home">
