@@ -9,16 +9,13 @@ import {
 } from '@terra-money/wallet-provider';
 import React from 'react';
 
-export function useDeposit() {
+export function useDeposit(callback, callbackError) {
     const connectedWallet = useConnectedWallet();
     const contractAddress = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
 
     const deposit = (msg) => {
-
         if (connectedWallet) {
-
             // add if condition for type
-
             connectedWallet
                 .post({
                     msgs: [
@@ -36,25 +33,25 @@ export function useDeposit() {
                         )
                     ]
                 })
+                .then((result) => callback(result))
                 .catch((error) => {
                     if (error instanceof UserDenied) {
-                        setTxError('User Denied');
+                        callbackError('User Denied');
                     } else if (error instanceof CreateTxFailed) {
-                        setTxError('Create Tx Failed: ' + error.message);
+                        callbackError('Create Tx Failed: ' + error.message);
                     } else if (error instanceof TxFailed) {
-                        setTxError('Tx Failed: ' + error.message);
+                        callbackError('Tx Failed: ' + error.message);
                     } else if (error instanceof Timeout) {
-                        setTxError('Timeout');
+                        callbackError('Timeout');
                     } else if (error instanceof TxUnspecifiedError) {
-                        setTxError('Unspecified Error: ' + error.message);
+                        callbackError('Unspecified Error: ' + error.message);
                     } else {
-                        setTxError('Unknown Error: ' + (error instanceof Error ? error.message : String(error)),
+                        callbackError('Unknown Error: ' + (error instanceof Error ? error.message : String(error)),
                         );
                     }
                 });
         }
     }
+
     return {deposit}
 }
-
-export default useDeposit

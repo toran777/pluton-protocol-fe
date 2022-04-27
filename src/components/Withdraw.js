@@ -13,7 +13,9 @@ export function useWithdraw() {
     const connectedWallet = useConnectedWallet();
     const contractAddress = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
 
-    const withdraw = (id) => {
+    const withdraw = (id, msg) => {
+        let dict = {}
+        dict[msg] = {"id": id + ""}
 
         if (connectedWallet) {
             connectedWallet
@@ -22,26 +24,13 @@ export function useWithdraw() {
                         new MsgExecuteContract(
                             connectedWallet.walletAddress,
                             contractAddress,
-                            {"withdrawal": {"id": id}},
+                            dict,
                             0
                         )
                     ]
                 })
                 .catch((error) => {
-                    if (error instanceof UserDenied) {
-                        setTxError('User Denied');
-                    } else if (error instanceof CreateTxFailed) {
-                        setTxError('Create Tx Failed: ' + error.message);
-                    } else if (error instanceof TxFailed) {
-                        setTxError('Tx Failed: ' + error.message);
-                    } else if (error instanceof Timeout) {
-                        setTxError('Timeout');
-                    } else if (error instanceof TxUnspecifiedError) {
-                        setTxError('Unspecified Error: ' + error.message);
-                    } else {
-                        setTxError('Unknown Error: ' + (error instanceof Error ? error.message : String(error)),
-                        );
-                    }
+                    console.log(error)
                 });
         }
     }

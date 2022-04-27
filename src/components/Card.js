@@ -4,16 +4,18 @@ import PropTypes from "prop-types";
 import truncateAddress from "./Utility";
 import {useState} from "react";
 import useWithdraw from "./Withdraw";
-import {Skeleton} from "@mui/material";
+import {Button, Skeleton} from "@mui/material";
 import DepositDialog from "./DepositDialog";
 
 const CustomCard = ({items, type}) => {
     const itemsPerPage = 10
-    const lastPage = Math.floor(items.length / itemsPerPage + 1)
+    const offset = items.length % itemsPerPage === 0 ? 0 : 1
+    const lastPage = Math.floor(items.length / itemsPerPage + offset)
     const [currentPage, setCurrentPage] = useState(1)
     const [modalShow, setModalShow] = useState(false);
     const {withdraw} = useWithdraw()
     const placeholders = [1,2,3]
+    console.log(items)
 
     let currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
@@ -40,7 +42,7 @@ const CustomCard = ({items, type}) => {
         loading = false
         if (type === 'OUTGOING')
             body = currentItems.map((item) => (
-                <tr className={"col-12"}>
+                <tr key={item.id} className={"col-12"}>
                     <td className={"col-3"}>
                         <a href={"https://terrasco.pe/mainnet/address/" + item.beneficiary_addr}>{truncateAddress(item.beneficiary_addr)}</a>
                     </td>
@@ -51,9 +53,28 @@ const CustomCard = ({items, type}) => {
                         {item.beneficiary_amount + " UST"}
                     </td>
                     <td className={"col-3 text-center"}>
-                        <button onClick={() => withdraw(item.id)} className={"custom-btn text-white"}>
+                        <Button onClick={() => withdraw(item.id, "withdrawal")} className={"custom-btn text-white"}>
                             Withdraw
-                        </button>
+                        </Button>
+                    </td>
+                </tr>
+            ))
+        else if (type === 'INCOMING')
+            body = currentItems.map((item) => (
+                <tr key={item.id} className={"col-12"}>
+                    <td className={"col-3"}>
+                        <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr}>{truncateAddress(item.depositor_addr)}</a>
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        {item.amount / 1000000 + " UST"}
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        {item.beneficiary_amount + " UST"}
+                    </td>
+                    <td className={"col-3 text-center"}>
+                        <Button onClick={() => withdraw(item.id, "withdraw_interest")} className={"custom-btn text-white"}>
+                            Withdraw
+                        </Button>
                     </td>
                 </tr>
             ))
@@ -86,9 +107,10 @@ const CustomCard = ({items, type}) => {
                     <Table borderless={true}>
                         <thead className={"custom-header"}>
                         <tr className={"col-12"}>
-                            <th className={"col-4"}>From</th>
-                            <th className={"col-4 text-center"}>Amount</th>
-                            <th className={"col-4 text-center"}>Withdraw</th>
+                            <th className={"col-3"}>From</th>
+                            <th className={"col-3 text-center"}>Amount</th>
+                            <th className={"col-3 text-center"}>Lock Amount</th>
+                            <th className={"col-3 text-center"}>Withdraw</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -133,7 +155,7 @@ const CustomCard = ({items, type}) => {
         }
         <div className={"row mt-5 justify-content-center"}>
             <div className={"col-5"}></div>
-            <button className={"option-btn text-black col-2"} onClick={() => setModalShow(true)}>Fund</button>
+            <Button variant={"contained"} className={"button text-white col-2"} onClick={() => setModalShow(true)}>Fund</Button>
             <div className={"col-5"}></div>
         </div>
         <DepositDialog show={modalShow} onHide={() => setModalShow(false)}/>

@@ -1,10 +1,11 @@
-import {Button, Container, Form, Modal, Nav, Navbar} from "react-bootstrap";
+import {Container, Form, Modal, Nav, Navbar} from "react-bootstrap";
 import './Header.css';
 import {useState} from "react";
 import {useWallet, WalletStatus} from '@terra-money/wallet-provider';
 import truncateAddress from "./Utility";
 import {Link, useHistory} from "react-router-dom";
 import {BsSearch} from "react-icons/bs";
+import {Button} from "@mui/material";
 
 function Header({walletAddress, balanceAmount}) {
     const {status, availableConnections, connect, disconnect,} = useWallet();
@@ -24,7 +25,7 @@ function Header({walletAddress, balanceAmount}) {
     return (<Navbar variant="light" className="bg-transparent">
         <Container>
             <Link to={"/home"} className={"navbar-brand"}>Pluton Protocol</Link>
-            <Navbar.Collapse className={"col-12"}>
+            <Navbar.Collapse className={"col-12 col-md-8"}>
                 {status === WalletStatus.WALLET_NOT_CONNECTED && (<Nav className="col-4"/>)}
 
                 {status === WalletStatus.WALLET_CONNECTED && (
@@ -34,36 +35,36 @@ function Header({walletAddress, balanceAmount}) {
                         <Link to={"/profile/" + walletAddress} className={"nav-link"}>Profile</Link>
                     </Nav>)}
                 <Nav className="col-8 p-2 justify-content-end">
-                    <Form className={"col-4 p-2"}>
-                        <input className={"custom-search col-10"} type="search" placeholder="Search" value={value}
-                               onChange={(event) => {setValue(event.target.value)}}
-                               onKeyPress={event => {
-                                   if (event.key === 'Enter') {
-                                       onSearchProfile(event)
+                    {status === WalletStatus.WALLET_CONNECTED && (
+                        <Form className={"col-4 p-2"}>
+                            <input className={"custom-search col-10"} type="search" placeholder="Search" value={value}
+                                   onChange={(event) => {setValue(event.target.value)}}
+                                   onKeyPress={event => {
+                                       if (event.key === 'Enter') {
+                                           onSearchProfile(event)
+                                       }
                                    }
-                               }
-                        }/>
-                        <BsSearch/>
-                    </Form>
+                                   }/>
+                            <BsSearch/>
+                        </Form>)
+                    }
                     <div className={"p-2 col-4"}>
                         {status === WalletStatus.WALLET_NOT_CONNECTED && (
                             <Nav.Item>
-                                <Button className={"btn btn-dark custom-btn"} onClick={handleShow}>Connect</Button>
+                                <Button variant={"contained"} className={"btn btn-dark custom-btn"} onClick={handleShow}>Connect</Button>
                             </Nav.Item>)
                         }
                         {status === WalletStatus.WALLET_CONNECTED && (<Nav.Item>
-                            <button className={"btn btn-dark custom-btn-wallet"} onClick={() => {
-                                setTimeout(() => {
-                                    disconnect()
-                                    handleClose()
-                                    history.push("/")
-                                }, 1000)
+                            <Button variant={"contained"} className={"btn btn-dark custom-btn-wallet"} onClick={() => {
+                                disconnect()
+                                handleClose()
+                                history.push("/")
                             }}>
                                 <span>{truncateAddress(walletAddress)}</span>
                                 <span className={"divider"}>|</span>
                                 <span className={"balance-amount"}>{balanceAmount}</span>
                                 <span className={"coin-type"}>UST</span>
-                            </button>
+                            </Button>
                         </Nav.Item>)}
                     </div>
                 </Nav>
