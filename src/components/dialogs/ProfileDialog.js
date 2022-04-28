@@ -1,7 +1,7 @@
 import {Modal, Form} from "react-bootstrap";
 import {Grid, Button} from "@material-ui/core";
 import {useState} from "react";
-import {useRegister} from "./Register";
+import {useRegister} from "../Register";
 
 function ProfileDialog(props) {
     const [profile, setProfile] = useState({img: "", name: "", description: "", github: "", linkedin: "", twitter: ""}) 

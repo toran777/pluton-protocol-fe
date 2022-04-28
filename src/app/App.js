@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import Header from '../components/Header';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
 import HomePage from "../components/HomePage";
 import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom";
-import Card from "../components/Card";
 import {Profile} from "../components/Profile";
+import {Header} from "../components/Header";
+import {Donations} from "../components/Donations";
+import {Payments} from "../components/Payments";
 import './App.css';
 
 function App() {
@@ -13,10 +14,12 @@ function App() {
     const [balance, setBalance] = useState()
     const [walletAddress, setWalletAddress] = useState()
     const [fetchPayments, setFetchPayments] = useState(true)
+    const [loadingDonations, setLoadingDonations] = useState(true)
+    const [loadingPayments, setLoadingPayments] = useState(true)
 
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet()
-    const depositContract = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
+    const depositContract = "terra12tpndz0lhdntfv2hhrvjkn504e3yvazqwk4x8t"
 
     useEffect(() => {
         const getPayments = async () => {
@@ -42,6 +45,7 @@ function App() {
                     const array = [];
                     r.map(item => array.push(item[1]));
                     setOutgoingPayments(array);
+                    setLoadingDonations(false);
                 }).catch((error) => console.log(error));
 
                 // Query beneficiary balance
@@ -53,8 +57,8 @@ function App() {
                     const array = [];
                     r.map(item => array.push(item[1]));
                     setIncomingPayments(array);
+                    setLoadingPayments(false);
                 }).catch((error) => console.log(error));
-
             }
         }
 
@@ -70,11 +74,11 @@ function App() {
                     <Route path="/home">
                         <HomePage/>
                     </Route>
-                    <Route path="/outgoing-payments">
-                        <Card items={outgoingPayments} type={"OUTGOING"}/>
+                    <Route path="/payments">
+                        <Payments items={outgoingPayments} loading={loadingPayments}/>
                     </Route>
-                    <Route path="/incoming-donations">
-                        <Card items={incomingPayments} type={"INCOMING"}/>
+                    <Route path="/donations">
+                        <Donations items={incomingPayments} loading={loadingDonations}/>
                     </Route>
                     <Route path="/profile/:address" component={Profile}>
                     </Route>

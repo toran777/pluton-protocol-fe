@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Card, Container} from "react-bootstrap";
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
-import ProfileDialog from "./ProfileDialog";
+import ProfileDialog from "./dialogs/ProfileDialog";
 import {Skeleton} from "@mui/material";
 import {useParams} from 'react-router-dom'
 

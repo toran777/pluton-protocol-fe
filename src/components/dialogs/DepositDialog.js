@@ -1,9 +1,9 @@
 import {Form, Modal, Spinner} from "react-bootstrap";
 import {Button, Grid} from "@material-ui/core";
-import {useDeposit} from "./Deposit";
+import {useDeposit} from "../Deposit";
 import {useState} from "react";
 import './DepositDialog.css';
-import truncateAddress from "./Utility";
+import truncateAddress from "../Utility";
 
 function DepositDialog(props) {
     const [msg, setMsg] = useState({beneficiaryAddress: "", lockAmount: "", amount: ""})
@@ -125,7 +125,7 @@ function DepositDialog(props) {
                     Tx Hash
                 </div>
                 <div className={"col-4"}>
-                    <a href={"https://www.google.com"}>{truncateAddress(result.txHash)}</a>
+                    <a href={"https://terrasco.pe/testnett/tx/" + result.txHash}>{truncateAddress(result.txHash)}</a>
                 </div>
             </div>
             <Button variant={"contained"} className={"col-12 p-2 mt-3 button text-white"} onClick={() => {
@@ -153,14 +153,14 @@ function DepositDialog(props) {
         </Modal.Body>
     </Modal>
 
-    if (!loading && !result.txHash) {
+    if (error) {
+        currentModal = errorModal
+    } else if (!loading && !result.txHash) {
         currentModal = firstModal
     } else if (loading) {
         currentModal = secondModal
     } else if (!loading && result.txHash) {
         currentModal = thirdModal
-    } else if (error) {
-        currentModal = errorModal
     }
 
     return (currentModal);

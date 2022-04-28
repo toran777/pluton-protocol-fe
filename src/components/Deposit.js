@@ -11,7 +11,7 @@ import React from 'react';
 
 export function useDeposit(callback, callbackError) {
     const connectedWallet = useConnectedWallet();
-    const contractAddress = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
+    const contractAddress = "terra12tpndz0lhdntfv2hhrvjkn504e3yvazqwk4x8t"
 
     const deposit = (msg) => {
         if (connectedWallet) {
