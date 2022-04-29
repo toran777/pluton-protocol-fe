@@ -29,7 +29,9 @@ export function useWithdraw(callback, callbackError) {
                         )
                     ]
                 })
-                .then((result) => callback(result))
+                .then((result) => {
+                    callback(result)
+                })
                 .catch((error) => {
                     if (error instanceof UserDenied) {
                         callbackError('User Denied');
@@ -50,5 +52,3 @@ export function useWithdraw(callback, callbackError) {
     }
     return {withdraw}
 }
-
-export default useWithdraw

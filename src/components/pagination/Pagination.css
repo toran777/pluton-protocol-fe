@@ -1,0 +1,17 @@
+.custom-pagination .page-item.active .page-link {
+    background-color: black;
+    border-color: black;
+}
+
+.page-link:focus {
+    color: black;
+    outline: none;
+}
+
+.page-link {
+    color: black;
+}
+
+.page-link:hover {
+    color: gray;
+}

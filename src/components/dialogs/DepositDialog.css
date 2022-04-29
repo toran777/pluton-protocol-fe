@@ -5,6 +5,7 @@
 
 .button {
     background-color: black !important;
+    text-transform: none !important;
 }
 
 .button:hover {
