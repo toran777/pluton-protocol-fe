@@ -18,7 +18,7 @@ export function ErrorDialog({show, error, onHide}) {
                 </div>
                 <Button
                     variant={"contained"}
-                    className={"col-12 p-2 mt-3 button text-white"}
+                    className={"col-12 p-2 mt-3 custom-btn text-white"}
                     onClick={() => {
                         onHide()
                     }}>Ok</Button>

@@ -1,40 +1,38 @@
 import {Card, Container, Table} from "react-bootstrap";
 import {Button, Skeleton} from "@mui/material";
 import React, {useState} from "react";
-import {Page} from "./pagination/Pagination";
-import {DepositDialog} from "./dialogs/DepositDialog";
-import {WithdrawDialog} from "./dialogs/WithdrawDialog";
-import truncateAddress from "./Utility";
+import {Page} from "../pagination/Pagination";
+import {WithdrawDialog} from "../dialogs/WithdrawDialog";
+import {truncateAddress} from "../Utility";
 import './Card.css';
 
-export function Payments({items, loading, refresh}) {
-    const [modalShowFund, setModalShowFund] = useState(false)
-    const [modalShowWithdraw, setModalShowWithdraw] = useState(false)
+export function Donations({items, loading}) {
+    const [modalShow, setModalShow] = useState(false)
     const [currentItems, setCurrentItems] = useState([])
     const [selected, setSelected] = useState([])
     const placeholders = [1, 2, 3]
 
     let body
 
-    if (!loading && items.length > 0) {
+    if (items.length > 0 && !loading) {
         body = currentItems.map((item) => (<tr key={item.id} className={"col-12"}>
             <td className={"col-3"}>
-                <a href={"https://terrasco.pe/mainnet/address/" + item.beneficiary_addr}>{truncateAddress(item.beneficiary_addr)}</a>
+                <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr}>{truncateAddress(item.depositor_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
             <td className={"col-3 text-center"}>{item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
                 <Button
-                    className={"custom-btn text-white"}
+                    className={"custom-table-btn text-white"}
                     onClick={() => {
-                        item.msg = "withdrawal"
+                        item.msg = "withdraw_interest"
                         setSelected(item)
-                        setModalShowWithdraw(true)
+                        setModalShow(true)
                     }}>Withdraw
                 </Button>
             </td>
         </tr>))
-    } else if (loading) {
+    } else {
         body = placeholders.map((item) => (<tr key={item} className={"col-12"}>
             <td className={"col-3"}>
                 <Skeleton/>
@@ -53,18 +51,18 @@ export function Payments({items, loading, refresh}) {
 
     return (
         <Container className={"mt-4 col-sm-12 col-md-6"}>
-            <h1 className="text-center mt-5 col-12">Outgoing Payments</h1>
-            <Card.Title className="text-center mt-3">Here's a list of your outgoing payments.</Card.Title>
+            <h1 className="text-center mt-5 col-12">Incoming Donations</h1>
+            <Card.Title className="text-center mt-3">Here's a list of your incoming donations.</Card.Title>
             <Card className={"custom-card mt-5"}>
                 <Card.Body>
                     {
                         !loading && items.length === 0 ? (<>
-                            <div className={"text-center"}>It looks like you don't have any payments yet.</div>
+                            <div className={"text-center"}>It looks like you don't have any donations yet.</div>
                         </>) : (<>
                             <Table borderless={true}>
                                 <thead className={"custom-header"}>
                                 <tr className={"col-12"}>
-                                    <th className={"col-3"}>To</th>
+                                    <th className={"col-3"}>From</th>
                                     <th className={"col-3 text-center"}>Amount</th>
                                     <th className={"col-3 text-center"}>Lock Amount</th>
                                     <th className={"col-3 text-center"}>Withdraw</th>
@@ -78,24 +76,12 @@ export function Payments({items, loading, refresh}) {
                     }
                 </Card.Body>
             </Card>
-            <Page items={items} loading={loading} onItemsChange={(newItems) => {
-                setCurrentItems([...newItems])
-            }} />
-            <div className={"row mt-2 pb-5 justify-content-center"}>
-                <div className={"col-5"}></div>
-                <Button variant={"contained"}
-                        className={"button text-white col-2"}
-                        onClick={() => setModalShowFund(true)}>Fund</Button>
-                <div className={"col-5"}></div>
-            </div>
-            <DepositDialog
-                show={modalShowFund}
-                onHide={() => setModalShowFund(false)}
-                onResult={(item) => {refresh(item)}}/>
+            <Page items={items} loading={loading} onItemsChange={(newItems) => setCurrentItems([...newItems])} />
+            <div className={"mt-2 pb-5"}></div>
             <WithdrawDialog
                 item={selected}
-                show={modalShowWithdraw}
-                onHide={() => setModalShowWithdraw(false)}
+                show={modalShow}
+                onHide={() => setModalShow(false)}
                 onResult={(result) => console.log(result)}/>
         </Container>
     )

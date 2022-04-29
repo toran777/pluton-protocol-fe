@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
 import {Card, Container} from "react-bootstrap";
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
-import ProfileDialog from "./dialogs/ProfileDialog";
-import {Skeleton} from "@mui/material";
+import ProfileDialog from "../dialogs/ProfileDialog";
+import {Button, Skeleton} from "@mui/material";
 import {useParams} from 'react-router-dom';
+import {profileAddress} from "../Utility";
 
 export function Profile() {
     const { address } = useParams();
@@ -15,14 +16,12 @@ export function Profile() {
     const [profile, setProfile] = useState();
     const [fetchQuery, setFetchQuery] = useState(true)
     const [modalShow, setModalShow] = useState(false);
-
-    const contractAddress = "terra1s6v2km9zd33wemr492la8tvjkll2dhnmguz64x";
     const type = (useConnectedWallet().walletAddress === address) ? "Modify" : "Donate";
 
     const get_profile = async () => {
         setFetchQuery(false)
         // Query profile info
-        lcd.wasm.contractQuery(contractAddress, {
+        lcd.wasm.contractQuery(profileAddress, {
             get_profile: {
                 address: address
             }
@@ -56,7 +55,7 @@ export function Profile() {
                     <Card.Link href={profile ? profile.linkedin : <Skeleton/>}>Linkedin</Card.Link>
                     <Card.Link href={profile ? profile.twitter : <Skeleton/>}>Twitter</Card.Link>
                 </Card.Body>
-                <button variant="contained" onClick={() => setModalShow(true)}>{type}</button>
+                <Button variant="contained" onClick={() => setModalShow(true)}>{type}</Button>
                 <ProfileDialog show={modalShow} onHide={() => setModalShow(false)}/>
 
             </Card>

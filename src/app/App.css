@@ -41,19 +41,33 @@
   }
 }
 
+.custom-table-btn {
+  background-color: black !important;
+  height: 25px;
+  text-align: center;
+  width: 90px;
+  padding: 0 !important;
+  border-radius: 15px !important;
+  line-height: 0 !important;
+  text-transform: none !important;
+  font-family: Poppins, sans-serif !important;
+  font-size: 14px !important;
+  color: white !important;
+}
+
 .custom-btn {
   background-color: black !important;
-  height: 25px !important;
-  text-align: center !important;
-  width: 90px !important;
-  border-radius: 20px !important;
-  padding: 0 !important;
-  display: inline-block;
-  line-height: 0 !important;
+  text-transform: none !important;
   font-size: 14px !important;
-  font-weight: bold !important;
+  font-family: Poppins, sans-serif !important;
 }
 
 .custom-btn:hover {
   opacity: 80%;
+  transition: linear 0.2s;
+}
+
+.custom-table-btn:hover {
+  opacity: 80%;
+  transition: linear 0.2s;
 }

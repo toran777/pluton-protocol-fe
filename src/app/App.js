@@ -1,25 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
-import HomePage from "../components/HomePage";
+import {HomePage} from "../components/core/HomePage";
 import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom";
-import {Profile} from "../components/Profile";
-import {Header} from "../components/Header";
-import {Donations} from "../components/Donations";
-import {Payments} from "../components/Payments";
+import {Profile} from "../components/core/Profile";
+import {Header} from "../components/core/Header";
+import {Donations} from "../components/core/Donations";
+import {Payments} from "../components/core/Payments";
+import {contractAddress} from "../components/Utility";
 import './App.css';
 
 function App() {
     const [incomingPayments, setIncomingPayments] = useState([])
     const [outgoingPayments, setOutgoingPayments] = useState([])
-    const [balance, setBalance] = useState()
-    const [walletAddress, setWalletAddress] = useState()
+    const [balance, setBalance] = useState(0)
+    const [walletAddress, setWalletAddress] = useState("")
     const [fetchPayments, setFetchPayments] = useState(true)
     const [loadingDonations, setLoadingDonations] = useState(true)
     const [loadingPayments, setLoadingPayments] = useState(true)
 
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet()
-    const depositContract = "terra12tpndz0lhdntfv2hhrvjkn504e3yvazqwk4x8t"
 
     useEffect(() => {
         const getPayments = async () => {
@@ -33,11 +33,11 @@ function App() {
                 // Query wallet balance
                 lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
                     const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount);
-                    setBalance(balance.toLocaleString());
+                    setBalance(balance);
                 }).catch((error) => console.log(error));
 
                 // Query depositor balance
-                lcd.wasm.contractQuery(depositContract, {
+                lcd.wasm.contractQuery(contractAddress, {
                     depositor_balance: {
                         address: connectedWallet.walletAddress
                     }
@@ -49,7 +49,7 @@ function App() {
                 }).catch((error) => console.log(error));
 
                 // Query beneficiary balance
-                lcd.wasm.contractQuery(depositContract, {
+                lcd.wasm.contractQuery(contractAddress, {
                     beneficiary_balance: {
                         address: connectedWallet.walletAddress
                     }
@@ -77,20 +77,7 @@ function App() {
                     <Route path="/payments">
                         <Payments items={outgoingPayments} loading={loadingPayments} refresh={(item) => {
                             setLoadingPayments(true)
-                            setTimeout(() => {
-                                lcd.wasm.contractQuery(depositContract, {
-                                    beneficiary_balance: {
-                                        address: connectedWallet.walletAddress
-                                    }
-                                }).then((r) => {
-                                    const array = []
-                                    r.map(item => array.push(item[1]))
-                                    console.log(r)
-                                    console.log(array)
-                                    setIncomingPayments([...array])
-                                    setLoadingPayments(false)
-                                }).catch((error) => console.log(error));
-                            }, 10000)
+                            console.log(item)
                         }}/>
                     </Route>
                     <Route path="/donations">

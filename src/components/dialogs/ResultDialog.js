@@ -1,10 +1,9 @@
 import {Modal} from "react-bootstrap";
-import truncateAddress from "../Utility";
+import {truncateAddress} from "../Utility";
 import {Button} from "@material-ui/core";
 
 export function ResultDialog({show, msg, result, onHide}) {
-    return (
-        <Modal
+    return (<Modal
             show={show}
             onHide={onHide}
             size="md"
@@ -40,11 +39,10 @@ export function ResultDialog({show, msg, result, onHide}) {
                 </div>
                 <Button
                     variant={"contained"}
-                    className={"col-12 p-2 mt-3 button text-white"}
+                    className={"col-12 p-2 mt-3 custom-btn text-white"}
                     onClick={() => {
                         onHide()
                     }}>Ok</Button>
             </Modal.Body>
-        </Modal>
-    )
+        </Modal>)
 }
