@@ -5,7 +5,7 @@ import {useState} from "react";
 import './DepositDialog.css';
 import truncateAddress from "../Utility";
 
-function DepositDialog(props) {
+function DepositDialog({show, onHide, onResult}) {
     const [msg, setMsg] = useState({beneficiaryAddress: "", lockAmount: "", amount: ""})
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState({txHash: ""})
@@ -18,6 +18,7 @@ function DepositDialog(props) {
     function callback(item) {
         setResult({txHash: item.result.txhash})
         setLoading(false)
+        onResult(item)
     }
 
     function callbackError(err) {
@@ -26,7 +27,8 @@ function DepositDialog(props) {
     }
 
     const firstModal = <Modal
-        {...props}
+        show={show}
+        onHide={onHide}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered>
@@ -77,7 +79,8 @@ function DepositDialog(props) {
     </Modal>
 
     const secondModal = <Modal
-        {...props}
+        show={show}
+        onHide={onHide}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered>
@@ -95,7 +98,7 @@ function DepositDialog(props) {
     </Modal>
 
     const thirdModal = <Modal
-        {...props}
+        onHide={onHide}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         show={showing}
@@ -135,7 +138,7 @@ function DepositDialog(props) {
     </Modal>
 
     const errorModal = <Modal
-        {...props}
+        onHide={onHide}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         show={showing}

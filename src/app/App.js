@@ -75,7 +75,23 @@ function App() {
                         <HomePage/>
                     </Route>
                     <Route path="/payments">
-                        <Payments items={outgoingPayments} loading={loadingPayments}/>
+                        <Payments items={outgoingPayments} loading={loadingPayments} refresh={(item) => {
+                            setLoadingPayments(true)
+                            setTimeout(() => {
+                                lcd.wasm.contractQuery(depositContract, {
+                                    beneficiary_balance: {
+                                        address: connectedWallet.walletAddress
+                                    }
+                                }).then((r) => {
+                                    const array = []
+                                    r.map(item => array.push(item[1]))
+                                    console.log(r)
+                                    console.log(array)
+                                    setIncomingPayments([...array])
+                                    setLoadingPayments(false)
+                                }).catch((error) => console.log(error));
+                            }, 10000)
+                        }}/>
                     </Route>
                     <Route path="/donations">
                         <Donations items={incomingPayments} loading={loadingDonations}/>

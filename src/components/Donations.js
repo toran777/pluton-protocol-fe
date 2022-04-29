@@ -3,12 +3,14 @@ import {Button, Skeleton} from "@mui/material";
 import React, {useState} from "react";
 import truncateAddress from "./Utility";
 import './Card.css';
+import useWithdraw from "./Withdraw";
 
 export function Donations({items, loading}) {
     const itemsPerPage = 10
     const offset = items.length % itemsPerPage === 0 ? 0 : 1
     const lastPage = Math.floor(items.length / itemsPerPage + offset)
     const [currentPage, setCurrentPage] = useState(1)
+    const {withdraw} = useWithdraw()
     const placeholders = [1, 2, 3]
 
     let currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -31,26 +33,20 @@ export function Donations({items, loading}) {
 
     let body
 
-    if (currentItems.length > 0) {
-        loading = false
+    if (currentItems.length > 0 && !loading) {
         body = currentItems.map((item) => (<tr key={item.id} className={"col-12"}>
             <td className={"col-3"}>
                 <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr}>{truncateAddress(item.depositor_addr)}</a>
             </td>
+            <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
+            <td className={"col-3 text-center"}>{item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
-                {item.amount / 1000000 + " UST"}
-            </td>
-            <td className={"col-3 text-center"}>
-                {item.beneficiary_amount + " UST"}
-            </td>
-            <td className={"col-3 text-center"}>
-                <Button onClick={() => withdraw(item.id, "withdraw_interest")} className={"custom-btn text-white"}>
-                    Withdraw
+                <Button onClick={() => withdraw(item.id, "withdraw_interest")}
+                        className={"custom-btn text-white"}>Withdraw
                 </Button>
             </td>
         </tr>))
     } else {
-        loading = true
         body = placeholders.map((item) => (<tr key={item} className={"col-12"}>
             <td className={"col-3"}>
                 <Skeleton/>

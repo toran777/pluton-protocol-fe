@@ -9,27 +9,23 @@ import {
 } from '@terra-money/wallet-provider';
 import React from 'react';
 
-export function useDeposit(callback, callbackError) {
-    const connectedWallet = useConnectedWallet();
+export function useWithdraw(callback, callbackError) {
+    const connectedWallet = useConnectedWallet()
     const contractAddress = "terra12tpndz0lhdntfv2hhrvjkn504e3yvazqwk4x8t"
 
-    const deposit = (msg) => {
+    const withdraw = (id, msg) => {
+        let dict = {}
+        dict[msg] = {"id": id + ""}
+
         if (connectedWallet) {
-            // add if condition for type
             connectedWallet
                 .post({
                     msgs: [
                         new MsgExecuteContract(
                             connectedWallet.walletAddress,
                             contractAddress,
-                            {
-                                "deposit": {
-                                    "denom": "uusd",
-                                    "beneficiary": msg.beneficiaryAddress,
-                                    "beneficiary_amount": msg.lockAmount,
-                                }
-                            },
-                            {uusd: msg.amount * 1000000}
+                            dict,
+                            0
                         )
                     ]
                 })
@@ -46,11 +42,13 @@ export function useDeposit(callback, callbackError) {
                     } else if (error instanceof TxUnspecifiedError) {
                         callbackError('Unspecified Error: ' + error.message);
                     } else {
-                        callbackError('Unknown Error: ' + (error instanceof Error ? error.message : String(error)));
+                        callbackError('Unknown Error: ' + (error instanceof Error ? error.message : String(error)),
+                        );
                     }
                 });
         }
     }
-
-    return {deposit}
+    return {withdraw}
 }
+
+export default useWithdraw

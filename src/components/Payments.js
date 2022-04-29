@@ -2,11 +2,11 @@ import {Card, Container, Pagination, Table} from "react-bootstrap";
 import {Button, Skeleton} from "@mui/material";
 import React, {useState} from "react";
 import truncateAddress from "./Utility";
-import useWithdraw from "./dialogs/Withdraw";
+import useWithdraw from "./Withdraw";
 import DepositDialog from "./dialogs/DepositDialog";
 import './Card.css';
 
-export function Payments({items, loading}) {
+export function Payments({items, loading, refresh}) {
     const itemsPerPage = 10
     const offset = items.length % itemsPerPage === 0 ? 0 : 1
     const lastPage = Math.floor(items.length / itemsPerPage + offset)
@@ -108,6 +108,8 @@ export function Payments({items, loading}) {
                     onClick={() => setModalShow(true)}>Fund</Button>
             <div className={"col-5"}></div>
         </div>
-        <DepositDialog show={modalShow} onHide={() => setModalShow(false)}/>
+        <DepositDialog show={modalShow} onHide={() => setModalShow(false)} onResult={(item) => {
+            refresh(item)
+        }}/>
     </Container>)
 }

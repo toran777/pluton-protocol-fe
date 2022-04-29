@@ -3,7 +3,7 @@ import {Card, Container} from "react-bootstrap";
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
 import ProfileDialog from "./dialogs/ProfileDialog";
 import {Skeleton} from "@mui/material";
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router-dom';
 
 export function Profile() {
     const { address } = useParams();
@@ -63,5 +63,3 @@ export function Profile() {
         </Container>
     )
 }
-
-export default Profile;
