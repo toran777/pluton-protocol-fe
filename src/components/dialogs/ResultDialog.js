@@ -34,7 +34,7 @@ export function ResultDialog({show, msg, result, onHide}) {
                         Tx Hash
                     </div>
                     <div className={"col-4"}>
-                        <a href={"https://terrasco.pe/testnett/tx/" + result.txHash}>{truncateAddress(result.txHash)}</a>
+                        <a href={"https://terrasco.pe/testnett/tx/" + result.txHash} target={"_blank"}>{truncateAddress(result.txHash)}</a>
                     </div>
                 </div>
                 <Button

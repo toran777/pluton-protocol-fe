@@ -1,64 +1,90 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Card, Container} from "react-bootstrap";
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
-import ProfileDialog from "../dialogs/ProfileDialog";
 import {Button, Skeleton} from "@mui/material";
 import {useParams} from 'react-router-dom';
 import {profileAddress} from "../Utility";
+import {ProfileDialog} from "../dialogs/ProfileDialog";
+import {DepositDialog} from "../dialogs/DepositDialog";
 
 export function Profile() {
-    const { address } = useParams();
+    const {address} = useParams()
+    const connectedWallet = useConnectedWallet()
+    const lcd = useLCDClient()
 
-    const lcd = useLCDClient({
-        URL: 'https://bombay-lcd.terra.dev',
-        chainID: 'bombay-12',
-    });
-    const [profile, setProfile] = useState();
     const [fetchQuery, setFetchQuery] = useState(true)
-    const [modalShow, setModalShow] = useState(false);
-    const type = (useConnectedWallet().walletAddress === address) ? "Modify" : "Donate";
-
-    const get_profile = async () => {
-        setFetchQuery(false)
-        // Query profile info
-        lcd.wasm.contractQuery(profileAddress, {
-            get_profile: {
-                address: address
-            }
-        }).then((r) => {
-            setProfile(prevItem => ({
-                ...prevItem,
-                img: r.img,
-                name: r.name,
-                description: r.description,
-                github: r.github,
-                linkedin: r.linkedin,
-                twitter: r.twitter
-            }))
-        }).catch((error) => console.log(error));
-    }
-
-    fetchQuery && get_profile()
-
-    return (
-        <Container className={"mt-4 col-4"}>
-            <Card className={"custom-card mt-5"}>
-                <Card.Title className="text-center mt-3">
-                    {profile ? profile.name : <Skeleton/>}
-                </Card.Title>
-                <Card.Body>
-                    <Card.Img src={"../0x7183.png"} alt="profile"/>
-                    <Card.Text></Card.Text>
-                    <Card.Subtitle>{profile ? profile.description : <Skeleton/>}</Card.Subtitle>
-                    <Card.Text></Card.Text>
-                    <Card.Link href={profile ? profile.github : <Skeleton/>}>Github</Card.Link>
-                    <Card.Link href={profile ? profile.linkedin : <Skeleton/>}>Linkedin</Card.Link>
-                    <Card.Link href={profile ? profile.twitter : <Skeleton/>}>Twitter</Card.Link>
-                </Card.Body>
-                <Button variant="contained" onClick={() => setModalShow(true)}>{type}</Button>
-                <ProfileDialog show={modalShow} onHide={() => setModalShow(false)}/>
-
-            </Card>
-        </Container>
+    const [modalShow, setModalShow] = useState(false)
+    const [type, setType] = useState('')
+    const [content, setContent] = useState(
+        <Card className={"custom-card mt-5"}>
+            <Card.Body className={"text-center"}>
+                <Card.Title><Skeleton/></Card.Title>
+                <Card.Img src={'../0x7183.png'}/>
+                <Card.Text></Card.Text>
+                <Card.Subtitle><Skeleton/></Card.Subtitle>
+                <Card.Text></Card.Text>
+                <Skeleton/>
+            </Card.Body>
+        </Card>
     )
+
+    useEffect(() => {
+        if (connectedWallet) {
+            const getProfile = async () => {
+                setFetchQuery(false)
+                const buttonType = connectedWallet.walletAddress === address ? "Modify" : "Donate"
+                setType(buttonType)
+                // Query profile info
+                lcd.wasm.contractQuery(profileAddress, {
+                    get_profile: {
+                        address: address
+                    }
+                }).then((r) => {
+                    const cardContent = <div>
+                        <Card className={"custom-card mt-5"}>
+                            <Card.Body className={"text-center"}>
+                                <Card.Title>{r.name}</Card.Title>
+                                <Card.Img src={'../0x7183.png'}/>
+                                <Card.Text></Card.Text>
+                                <Card.Subtitle>{r.description}</Card.Subtitle>
+                                <Card.Text></Card.Text>
+                                <Card.Link href={r.github} target={"_blank"}>Github</Card.Link>
+                                <Card.Link href={r.linkedin} target={"_blank"}>LinkedIn</Card.Link>
+                                <Card.Link href={r.twitter} target={"_blank"}>Twitter</Card.Link>
+                            </Card.Body>
+                        </Card>
+                        <div className={"row mt-3 justify-content-center"}>
+                            <div className={"col-5"}></div>
+                            <Button variant={"contained"}
+                                    className={"custom-btn text-white col-2"}
+                                    onClick={() => setModalShow(true)}>{buttonType}</Button>
+                            <div className={"col-5"}></div>
+                        </div>
+                    </div>
+                    setContent(cardContent)
+                }).catch((_) => {
+                    const cardContent = <Card className={"custom-card mt-5"}>
+                        <Card.Body className={"text-center"}>
+                            <Button variant={"contained"}
+                                    className={"custom-btn text-white col-2"}
+                                    onClick={() => setModalShow(true)}>Create</Button>
+                        </Card.Body>
+                    </Card>
+                    setContent(cardContent)
+                });
+            }
+
+            fetchQuery && getProfile()
+        }
+    })
+
+    return (<Container className={"col-sm-12 col-md-3"}>
+        {content}
+        {type === 'Modify' ? <ProfileDialog show={modalShow} onHide={() => {
+            setModalShow(false)
+        }}/> : <DepositDialog
+            show={modalShow}
+            onHide={() => {setModalShow(false)}}
+            onResult={(res) => console.log(res)}/>}
+    </Container>)
 }

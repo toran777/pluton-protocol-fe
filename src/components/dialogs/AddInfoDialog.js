@@ -57,9 +57,7 @@ export function AddInfoDialog({show, onHide, onSubmit}) {
                 <Button
                     variant={"contained"}
                     className={"col-12 p-2 mt-3 custom-btn text-white"}
-                    onClick={() => {
-                        onHide()
-                    }}>Deposit
+                    onClick={() => {onSubmit(msg)}}>Deposit
                 </Button>
             </Modal.Footer>
         </Modal>)

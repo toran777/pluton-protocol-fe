@@ -44,10 +44,7 @@ export function WithdrawDialog({item, show, onHide, onResult}) {
     })
 
     if (error) {
-        currentModal = <ErrorDialog
-            show={show}
-            onHide={reset}
-            error={error} />
+        currentModal = <ErrorDialog show={show} onHide={reset} error={error} />
     } else if (loading) {
         currentModal = <WaitingDialog show={show} onHide={onHide} />
     } else if (!loading && result.txHash) {

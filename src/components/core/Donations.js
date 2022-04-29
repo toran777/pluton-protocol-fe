@@ -17,7 +17,7 @@ export function Donations({items, loading}) {
     if (items.length > 0 && !loading) {
         body = currentItems.map((item) => (<tr key={item.id} className={"col-12"}>
             <td className={"col-3"}>
-                <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr}>{truncateAddress(item.depositor_addr)}</a>
+                <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr} target={"_blank"}>{truncateAddress(item.depositor_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
             <td className={"col-3 text-center"}>{item.beneficiary_amount + " UST"}</td>

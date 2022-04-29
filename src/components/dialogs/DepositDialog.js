@@ -25,8 +25,15 @@ export function DepositDialog({show, onHide, onResult}) {
         setLoading(false)
     }
 
+    function reset() {
+        onHide()
+        setError(null)
+        setResult({txHash: ''})
+        setLoading(false)
+    }
+
     if (error) {
-        currentModal = <ErrorDialog show={show} onHide={onHide} error={error} />
+        currentModal = <ErrorDialog show={show} onHide={reset} error={error} />
     } else if (!loading && !result.txHash) {
         currentModal = <AddInfoDialog show={show} onHide={onHide} onSubmit={(msg) => {
             setLoading(true)
@@ -36,7 +43,9 @@ export function DepositDialog({show, onHide, onResult}) {
     } else if (loading) {
         currentModal = <WaitingDialog show={show} onHide={onHide} />
     } else if (!loading && result.txHash) {
-        currentModal = <ResultDialog show={show} onHide={onHide} msg={msg} result={result} />
+        currentModal = <ResultDialog show={show} onHide={() => {
+            reset()
+        }} msg={msg} result={result} />
     }
 
     return (currentModal)
