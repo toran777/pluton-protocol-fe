@@ -1,12 +1,14 @@
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {useWallet, WalletStatus} from '@terra-money/wallet-provider';
 import {truncateAddress} from "../Utility";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {Button} from "@mui/material";
 import './Header.css';
 
 export function Header({walletAddress, balanceAmount}) {
     const {status, connect, disconnect} = useWallet()
+    const history = useHistory()
+
     let currentButton;
     let body;
 
