@@ -5,7 +5,7 @@ import {ErrorDialog} from "./ErrorDialog";
 import {WaitingDialog} from "./WaitingDialog";
 import {ResultDialog} from "./ResultDialog";
 
-export function ProfileDialog({show, onHide, profile}) {
+export function ProfileDialog({show, onHide, profile, onDone}) {
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState({txHash: ""})
     const [error, setError] = useState()
@@ -16,6 +16,7 @@ export function ProfileDialog({show, onHide, profile}) {
     function callback(item) {
         setResult({txHash: item.result.txhash})
         setLoading(false)
+        onDone()
     }
 
     function callbackError(err) {

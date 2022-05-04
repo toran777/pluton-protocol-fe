@@ -7,13 +7,14 @@ import {contractAddress, truncateAddress} from "../Utility";
 import './Card.css';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
 
-export function Donations() {
+export function Donations(onTransaction) {
     const [donations, setDonations] = useState([])
     const [loadingDonations, setLoadingDonations] = useState(true)
     const [done, setDone] = useState(false)
     const [modalShow, setModalShow] = useState(false)
     const [currentItems, setCurrentItems] = useState([])
     const [selected, setSelected] = useState([])
+    const [reload, setReload] = useState(false)
     const placeholders = [1, 2, 3]
     const lcd = useLCDClient()
     const connectedWallet = useConnectedWallet()
@@ -33,6 +34,9 @@ export function Donations() {
     function getDonations() {
         // Query beneficiary balance
         setLoadingDonations(true)
+        setReload(false)
+
+        let tries = 0
 
         const loop = () => {
             const array = []
@@ -43,10 +47,14 @@ export function Donations() {
             }).then((r) => {
                 r.map(item => array.push(item[1]))
 
-                if (array.length === donations.length) setTimeout(loop, 1000)
+                if (array.length === donations.length && tries < 5) {
+                    tries += 1
+                    setTimeout(loop, 2000)
+                }
                 else {
                     setDonations([...array])
                     setLoadingDonations(false)
+                    setReload(true)
                 }
             }).catch((error) => console.log(error))
         }
@@ -118,13 +126,19 @@ export function Donations() {
                     }
                 </Card.Body>
             </Card>
-            <Page items={donations} loading={loadingDonations} onItemsChange={(newItems) => setCurrentItems([...newItems])} />
+            <Page items={donations}
+                  loading={loadingDonations}
+                  reload={reload}
+                  onItemsChange={(newItems) => setCurrentItems([...newItems])} />
             <div className={"mt-2 pb-5"}></div>
             <WithdrawDialog
                 item={selected}
                 show={modalShow}
                 onHide={() => setModalShow(false)}
-                onResult={getDonations}/>
+                onResult={() => {
+                    getDonations()
+                    onTransaction()
+                }}/>
         </Container>
     )
 }

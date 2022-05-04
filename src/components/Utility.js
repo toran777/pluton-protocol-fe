@@ -22,3 +22,5 @@ export function getErrorMessage(error) {
 
 export const contractAddress = "terra12tpndz0lhdntfv2hhrvjkn504e3yvazqwk4x8t"
 export const profileAddress = "terra1s6v2km9zd33wemr492la8tvjkll2dhnmguz64x"
+export const treedomAddress = "treedomAddress"
+export const developerAddress = "developerAddress"

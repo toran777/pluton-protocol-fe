@@ -8,7 +8,7 @@ import {contractAddress, truncateAddress} from "../Utility";
 import './Card.css';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
 
-export function Payments() {
+export function Payments({onTransaction}) {
     const [payments, setPayments] = useState([])
     const [loadingPayments, setLoadingPayments] = useState(true)
     const [done, setDone] = useState(false)
@@ -16,6 +16,7 @@ export function Payments() {
     const [modalShowWithdraw, setModalShowWithdraw] = useState(false)
     const [currentItems, setCurrentItems] = useState([])
     const [selected, setSelected] = useState([])
+    const [reload, setReload] = useState(false)
     const placeholders = [1, 2, 3]
     const lcd = useLCDClient()
     const connectedWallet = useConnectedWallet()
@@ -35,6 +36,8 @@ export function Payments() {
     function getPayments() {
         // Query depositor balance
         setLoadingPayments(true)
+        setReload(false)
+        let tries = 0
 
         const loop = () => {
             const array = []
@@ -45,10 +48,14 @@ export function Payments() {
             }).then((r) => {
                 r.map(item => array.push(item[1]))
 
-                if (array.length === payments.length) setTimeout(loop, 1000)
+                if (array.length === payments.length && tries < 5) {
+                    tries += 1
+                    setTimeout(loop, 2000)
+                }
                 else {
                     setPayments([...array])
                     setLoadingPayments(false)
+                    setReload(true)
                 }
 
             }).catch((error) => console.log(error))
@@ -120,6 +127,7 @@ export function Payments() {
             </Card>
             <Page items={payments}
                   loading={loadingPayments}
+                  reload={reload}
                   onItemsChange={(newItems) => {
                       setCurrentItems([...newItems])
                   }}/>
@@ -133,11 +141,17 @@ export function Payments() {
             <DepositDialog
                 show={modalShowFund}
                 onHide={() => setModalShowFund(false)}
-                onResult={getPayments}/>
+                onResult={() => {
+                    getPayments()
+                    onTransaction()
+                }}/>
             <WithdrawDialog
                 item={selected}
                 show={modalShowWithdraw}
                 onHide={() => setModalShowWithdraw(false)}
-                onResult={getPayments}/>
+                onResult={() => {
+                    getPayments()
+                    onTransaction()
+                }}/>
         </Container>)
 }

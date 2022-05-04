@@ -17,10 +17,17 @@ function App() {
 
     function getWalletBalance() {
         // Query wallet balance
-        lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
-            const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount)
-            setBalance(balance)
-        }).catch((error) => console.log(error))
+        const loop = () => {
+            let number = 0
+            lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
+                number = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount)
+
+                if (balance === number) setTimeout(loop, 2000)
+                else setBalance(number)
+            }).catch((error) => console.log(error))
+        }
+
+        loop()
     }
 
     useEffect(() => {
@@ -46,10 +53,10 @@ function App() {
                         <HomePage/>
                     </Route>
                     <Route path="/payments">
-                        <Payments/>
+                        <Payments onTransaction={getWalletBalance}/>
                     </Route>
                     <Route path="/donations">
-                        <Donations/>
+                        <Donations onTransaction={getWalletBalance}/>
                     </Route>
                     <Route path="/profile/:address" component={Profile}>
                     </Route>

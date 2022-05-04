@@ -5,7 +5,7 @@ import {ResultDialog} from "./ResultDialog";
 import {ErrorDialog} from "./ErrorDialog";
 import {AddInfoDialog} from "./AddInfoDialog";
 
-export function DepositDialog({show, onHide, onResult, address=''}) {
+export function DepositDialog({show, onHide, onResult, hideLockAmount = false, address=''}) {
     const [msg, setMsg] = useState({beneficiaryAddress: "", lockAmount: "", amount: ""})
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState({txHash: ""})
@@ -35,7 +35,7 @@ export function DepositDialog({show, onHide, onResult, address=''}) {
     if (error) {
         currentModal = <ErrorDialog show={show} onHide={reset} error={error} />
     } else if (!loading && !result.txHash) {
-        currentModal = <AddInfoDialog address={address} show={show} onHide={onHide} onSubmit={(msg) => {
+        currentModal = <AddInfoDialog address={address} hideLockAmount={hideLockAmount} show={show} onHide={onHide} onSubmit={(msg) => {
             setLoading(true)
             setMsg(msg)
             deposit(msg)

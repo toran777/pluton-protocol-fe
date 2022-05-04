@@ -2,7 +2,7 @@ import {Pagination} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import './Pagination.css';
 
-export function Page({items, loading, onItemsChange, itemsPerPage=10}) {
+export function Page({items, loading, reload, onItemsChange, itemsPerPage=10}) {
     const offset = items.length % itemsPerPage === 0 ? 0 : 1
     const lastPage = Math.floor(items.length / itemsPerPage + offset)
     const [currentPage, setCurrentPage] = useState(1)
@@ -11,13 +11,13 @@ export function Page({items, loading, onItemsChange, itemsPerPage=10}) {
     useEffect(() => {
         const getItems = async() => {
             if (items.length > 0) {
-                onItemsChange(items.slice(0, itemsPerPage))
+                onItemsChange(items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
                 setDone(true)
             }
         }
 
-        !done && getItems()
-    })
+        (!done || reload) && getItems()
+    }, [reload])
 
     function goToFirstPage() {
         const page = 1

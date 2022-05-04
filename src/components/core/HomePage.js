@@ -1,8 +1,14 @@
 import {Container} from "react-bootstrap";
 import {Button} from "@mui/material";
+import {developerAddress, treedomAddress} from "../Utility";
+import {DepositDialog} from "../dialogs/DepositDialog";
+import React, {useState} from "react";
 import './HomePage.css';
 
 export function HomePage() {
+    const [developerShow, setDeveloperShow] = useState(false)
+    const [treedomShow, setTreedomShow] = useState(false)
+
     return (
         <Container className={"p-4"}>
             <div className="row col-md-12 mt-5 align-items-center justify-content-center">
@@ -12,7 +18,6 @@ export function HomePage() {
                 <div className="col-md-4 mt-3">
                     <h1><b>The best way to pay/donate with crypto</b></h1>
                     <h5>Use your crypto assets to pay/help people for free.</h5>
-                    <Button className="custom-btn-wallet text-white mt-3">Donate</Button>
                 </div>
             </div>
             <div className="row mt-5"/>
@@ -25,7 +30,6 @@ export function HomePage() {
                     <div className="col-sm-12 col-md-5 mt-5">
                         <h2><b>Fund using the APY of your crypto</b></h2>
                         <h6>Deposit your UST and redirect Anchor APY to anyone.</h6>
-                        <Button className="custom-btn-wallet text-white mt-3">Donate</Button>
                     </div>
                 </div>
                 <div className="col-md-2"/>
@@ -42,7 +46,9 @@ export function HomePage() {
                         <h2><b>Plant a tree</b></h2>
                         <h6>Deposit your assets here and we'll use Anchor APY to plant trees and make our own Pluton
                             Forest on Treedom.</h6>
-                        <Button className="custom-btn-wallet text-white mt-3">Donate</Button>
+                        <Button className="custom-btn-wallet text-white mt-3" onClick={() => {
+                            setTreedomShow(true)
+                        }}>Donate</Button>
                     </div>
                 </div>
                 <div className="col-2"/>
@@ -59,7 +65,9 @@ export function HomePage() {
                         <small>Example</small>
                         <h2><b>Help the developers</b></h2>
                         <h6>We don't collect any fees from Pluton, if you like our work help us!</h6>
-                        <Button className="custom-btn-wallet text-white mt-3">Donate</Button>
+                        <Button className="custom-btn-wallet text-white mt-3" onClick={() => {
+                            setDeveloperShow(true)
+                        }}>Donate</Button>
                     </div>
                 </div>
                 <div className="col-2"/>
@@ -80,6 +88,16 @@ export function HomePage() {
                     <h6>Withdraw your assets when you need them back, or wait until the lock value is reached.</h6>
                 </div>
             </div>
+            <DepositDialog
+                show={treedomShow}
+                onHide={() => setTreedomShow(false)}
+                hideLockAmount={true}
+                address={treedomAddress}/>
+            <DepositDialog
+                show={developerShow}
+                onHide={() => setDeveloperShow(false)}
+                hideLockAmount={true}
+                address={developerAddress}/>
         </Container>
     );
 }
