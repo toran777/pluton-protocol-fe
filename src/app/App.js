@@ -10,8 +10,8 @@ import {contractAddress} from "../components/Utility";
 import './App.css';
 
 function App() {
-    const [incomingPayments, setIncomingPayments] = useState([])
-    const [outgoingPayments, setOutgoingPayments] = useState([])
+    const [donations, setDonations] = useState([])
+    const [payments, setPayments] = useState([])
     const [balance, setBalance] = useState(0)
     const [walletAddress, setWalletAddress] = useState("")
     const [fetchPayments, setFetchPayments] = useState(true)
@@ -23,47 +23,70 @@ function App() {
 
     function getPayments() {
         // Query depositor balance
-        lcd.wasm.contractQuery(contractAddress, {
-            depositor_balance: {
-                address: connectedWallet.walletAddress
-            }
-        }).then((r) => {
+        setLoadingPayments(true)
+
+        const loop = () => {
             const array = []
-            r.map(item => array.push(item[1]))
-            setOutgoingPayments(array)
-            setLoadingDonations(false)
+            lcd.wasm.contractQuery(contractAddress, {
+                depositor_balance: {
+                    address: connectedWallet.walletAddress
+                }
+            }).then((r) => {
+                r.map(item => array.push(item[1]))
+
+                if (array.length === payments.length) setTimeout(loop, 1000)
+                else {
+                    setPayments([...array])
+                    setLoadingPayments(false)
+                }
+
+            }).catch((error) => console.log(error))
+        }
+
+        loop()
+    }
+
+    function getDonations() {
+        // Query beneficiary balance
+        setLoadingDonations(true)
+
+        const loop = () => {
+            const array = []
+            lcd.wasm.contractQuery(contractAddress, {
+                beneficiary_balance: {
+                    address: connectedWallet.walletAddress
+                }
+            }).then((r) => {
+                r.map(item => array.push(item[1]))
+
+                if (array.length === donations.length) setTimeout(loop, 1000)
+                else {
+                    setDonations([...array])
+                    setLoadingDonations(false)
+                }
+            }).catch((error) => console.log(error))
+        }
+
+        loop()
+    }
+
+    function getWalletBalance() {
+        // Query wallet balance
+        lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
+            const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount)
+            setBalance(balance)
         }).catch((error) => console.log(error))
     }
 
     useEffect(() => {
         const queries = async () => {
             if (connectedWallet) {
-                const array = []
-
-                setIncomingPayments(array)
                 setFetchPayments(false)
-
                 setWalletAddress(connectedWallet.walletAddress)
 
-                // Query wallet balance
-                lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
-                    const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount)
-                    setBalance(balance)
-                }).catch((error) => console.log(error))
-
+                getWalletBalance()
                 getPayments()
-
-                // Query beneficiary balance
-                lcd.wasm.contractQuery(contractAddress, {
-                    beneficiary_balance: {
-                        address: connectedWallet.walletAddress
-                    }
-                }).then((r) => {
-                    const array = []
-                    r.map(item => array.push(item[1]))
-                    setIncomingPayments(array)
-                    setLoadingPayments(false)
-                }).catch((error) => console.log(error))
+                getDonations()
             }
         }
 
@@ -81,15 +104,22 @@ function App() {
                     </Route>
                     <Route path="/payments">
                         <Payments
-                            items={outgoingPayments}
+                            items={payments}
                             loading={loadingPayments}
-                            refresh={() => {getPayments()}}
+                            refresh={() => {
+                                getPayments()
+                                getWalletBalance()
+                            }}
                         />
                     </Route>
                     <Route path="/donations">
                         <Donations
-                            items={incomingPayments}
+                            items={donations}
                             loading={loadingDonations}
+                            refresh={() => {
+                                getDonations()
+                                getWalletBalance()
+                            }}
                         />
                     </Route>
                     <Route path="/profile/:address" component={Profile}>

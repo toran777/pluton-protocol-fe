@@ -6,7 +6,7 @@ import {WithdrawDialog} from "../dialogs/WithdrawDialog";
 import {truncateAddress} from "../Utility";
 import './Card.css';
 
-export function Donations({items, loading}) {
+export function Donations({items, loading, refresh}) {
     const [modalShow, setModalShow] = useState(false)
     const [currentItems, setCurrentItems] = useState([])
     const [selected, setSelected] = useState([])
@@ -82,7 +82,7 @@ export function Donations({items, loading}) {
                 item={selected}
                 show={modalShow}
                 onHide={() => setModalShow(false)}
-                onResult={(result) => console.log(result)}/>
+                onResult={refresh}/>
         </Container>
     )
 }
