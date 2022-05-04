@@ -1,20 +1,62 @@
 import {Card, Container, Table} from "react-bootstrap";
 import {Button, Skeleton} from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Page} from "../pagination/Pagination";
 import {WithdrawDialog} from "../dialogs/WithdrawDialog";
-import {truncateAddress} from "../Utility";
+import {contractAddress, truncateAddress} from "../Utility";
 import './Card.css';
+import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
 
-export function Donations({items, loading, refresh}) {
+export function Donations() {
+    const [donations, setDonations] = useState([])
+    const [loadingDonations, setLoadingDonations] = useState(true)
+    const [done, setDone] = useState(false)
     const [modalShow, setModalShow] = useState(false)
     const [currentItems, setCurrentItems] = useState([])
     const [selected, setSelected] = useState([])
     const placeholders = [1, 2, 3]
+    const lcd = useLCDClient()
+    const connectedWallet = useConnectedWallet()
+
+    useEffect(() => {
+        const query = async () => {
+            if (connectedWallet) {
+                setDone(true)
+                getDonations()
+            }
+        }
+
+        !done && query()
+
+    }, [done, connectedWallet, lcd])
+
+    function getDonations() {
+        // Query beneficiary balance
+        setLoadingDonations(true)
+
+        const loop = () => {
+            const array = []
+            lcd.wasm.contractQuery(contractAddress, {
+                beneficiary_balance: {
+                    address: connectedWallet.walletAddress
+                }
+            }).then((r) => {
+                r.map(item => array.push(item[1]))
+
+                if (array.length === donations.length) setTimeout(loop, 1000)
+                else {
+                    setDonations([...array])
+                    setLoadingDonations(false)
+                }
+            }).catch((error) => console.log(error))
+        }
+
+        loop()
+    }
 
     let body
 
-    if (items.length > 0 && !loading) {
+    if (donations.length > 0 && !loadingDonations) {
         body = currentItems.map((item) => (<tr key={item.id} className={"col-12"}>
             <td className={"col-3"}>
                 <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr} target={"_blank"}>{truncateAddress(item.depositor_addr)}</a>
@@ -56,7 +98,7 @@ export function Donations({items, loading, refresh}) {
             <Card className={"custom-card mt-5"}>
                 <Card.Body>
                     {
-                        !loading && items.length === 0 ? (<>
+                        !loadingDonations && donations.length === 0 ? (<>
                             <div className={"text-center"}>It looks like you don't have any donations yet.</div>
                         </>) : (<>
                             <Table borderless={true}>
@@ -76,13 +118,13 @@ export function Donations({items, loading, refresh}) {
                     }
                 </Card.Body>
             </Card>
-            <Page items={items} loading={loading} onItemsChange={(newItems) => setCurrentItems([...newItems])} />
+            <Page items={donations} loading={loadingDonations} onItemsChange={(newItems) => setCurrentItems([...newItems])} />
             <div className={"mt-2 pb-5"}></div>
             <WithdrawDialog
                 item={selected}
                 show={modalShow}
                 onHide={() => setModalShow(false)}
-                onResult={refresh}/>
+                onResult={getDonations}/>
         </Container>
     )
 }

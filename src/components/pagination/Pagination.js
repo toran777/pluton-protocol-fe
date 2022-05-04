@@ -2,8 +2,7 @@ import {Pagination} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import './Pagination.css';
 
-export function Page({items, loading, onItemsChange}) {
-    const itemsPerPage = 10
+export function Page({items, loading, onItemsChange, itemsPerPage=10}) {
     const offset = items.length % itemsPerPage === 0 ? 0 : 1
     const lastPage = Math.floor(items.length / itemsPerPage + offset)
     const [currentPage, setCurrentPage] = useState(1)
@@ -48,13 +47,13 @@ export function Page({items, loading, onItemsChange}) {
         <Pagination className="mt-2 pb-2 custom-pagination justify-content-center">
             {currentPage > 1 && <Pagination.Prev onClick={goToPreviousPage}/>}
             {currentPage > 2 && <Pagination.Item onClick={goToFirstPage}>{1}</Pagination.Item>}
-            {currentPage > 2 && <Pagination.Ellipsis/>}
+            {currentPage > 3 && <Pagination.Ellipsis/>}
             {currentPage > 1 && <Pagination.Item onClick={goToPreviousPage}>{currentPage - 1}</Pagination.Item>}
             <Pagination.Item active>{currentPage}</Pagination.Item>
             {currentPage < lastPage && <Pagination.Item onClick={goToNextPage}>{currentPage + 1}</Pagination.Item>}
-            {currentPage < lastPage - 1 && <Pagination.Ellipsis/>}
+            {currentPage < lastPage - 2 && <Pagination.Ellipsis/>}
             {currentPage < lastPage - 1 && <Pagination.Item onClick={goToLastPage}>{lastPage}</Pagination.Item>}
-            {currentPage < lastPage - 1 && <Pagination.Next onClick={goToNextPage}/>}
+            {currentPage < lastPage && <Pagination.Next onClick={goToNextPage}/>}
         </Pagination>
     )
 }
