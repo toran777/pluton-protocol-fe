@@ -14,7 +14,7 @@ export function WithdrawDialog({item, show, onHide, onResult}) {
 
     function callback(item) {
         setResult({txHash: item.result.txhash})
-        onResult(item)
+        onResult()
         setLoading(false)
     }
 

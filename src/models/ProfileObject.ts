@@ -1,4 +1,4 @@
-export class Profile {
+export class ProfileObject {
     name: string = '';
     img: string = '';
     description: string = '';

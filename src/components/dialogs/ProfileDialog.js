@@ -5,7 +5,7 @@ import {ErrorDialog} from "./ErrorDialog";
 import {WaitingDialog} from "./WaitingDialog";
 import {ResultDialog} from "./ResultDialog";
 
-export function ProfileDialog({show, onHide}) {
+export function ProfileDialog({show, onHide, profile}) {
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState({txHash: ""})
     const [error, setError] = useState()
@@ -33,10 +33,10 @@ export function ProfileDialog({show, onHide}) {
     if (error)
         currentModal = <ErrorDialog show={show} onHide={reset} error={error} />
     else if (!loading && !result.txHash)
-        currentModal = <AddInfoProfile show={show} onHide={onHide} onSubmit={(profile) => {
+        currentModal = <AddInfoProfile show={show} onHide={onHide} onSubmit={(r) => {
             setLoading(true)
-            register(profile)
-        }} />
+            register(r)
+        }} oldProfile={profile} />
     else if (loading)
         currentModal = <WaitingDialog show={show} onHide={onHide} />
     else if (!loading && result.txHash)

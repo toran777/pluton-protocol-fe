@@ -2,38 +2,42 @@ import {Form, Modal} from "react-bootstrap";
 import {Button} from "@material-ui/core";
 import {useState} from "react";
 
-export function AddInfoDialog({show, onHide, onSubmit}) {
-    const [msg, setMsg] = useState({beneficiaryAddress: "", lockAmount: "", amount: ""})
+export function AddInfoDialog({show, onHide, onSubmit, address}) {
+    const [msg, setMsg] = useState({beneficiaryAddress: address, lockAmount: "", amount: ""})
+
+    function onTextChange(event, key) {
+        const message = msg
+        message[key] = event.target.value
+        setMsg(message)
+    }
 
     return (
         <Modal
             show={show}
             onHide={onHide}
             size="md"
-            aria-labelledby="contained-modal-title-vcenter"
             centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
+                <Modal.Title>
                     Fund
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Beneficiary Address</Form.Label>
-                        <Form.Control
-                            onChange={(event) => setMsg(prevDeposit => ({
-                                ...prevDeposit,
-                                beneficiaryAddress: event.target.value
-                            }))}
-                            placeholder="Enter beneficiary address"
-                            type={"text"}/>
-                    </Form.Group>
+                    {
+                        address.length === 0 && <Form.Group className="mb-3">
+                            <Form.Label>Beneficiary Address</Form.Label>
+                            <Form.Control
+                                onChange={(event) => onTextChange(event, 'beneficiaryAddress')}
+                                placeholder="Enter beneficiary address"
+                                type={"text"}/>
+                        </Form.Group>
+                    }
 
                     <Form.Group className="mb-3">
                         <Form.Label>Amount</Form.Label>
                         <Form.Control
-                            onChange={(event) => setMsg(prevDeposit => ({...prevDeposit, amount: event.target.value}))}
+                            onChange={(event) => onTextChange(event, 'amount')}
                             placeholder="Enter UST Amount"
                             type={"number"}/>
                     </Form.Group>
@@ -41,10 +45,7 @@ export function AddInfoDialog({show, onHide, onSubmit}) {
                     <Form.Group className="mb-3">
                         <Form.Label>Lock Amount</Form.Label>
                         <Form.Control
-                            onChange={(event) => setMsg(prevDeposit => ({
-                                ...prevDeposit,
-                                lockAmount: event.target.value
-                            }))}
+                            onChange={(event) => onTextChange(event, 'lockAmount')}
                             placeholder="Enter Lock Amount"
                             type={"number"}/>
                         <Form.Text className="text-muted">
@@ -52,13 +53,12 @@ export function AddInfoDialog({show, onHide, onSubmit}) {
                         </Form.Text>
                     </Form.Group>
                 </Form>
-            </Modal.Body>
-            <Modal.Footer>
                 <Button
                     variant={"contained"}
+                    onClick={() => onSubmit(msg)}
                     className={"col-12 p-2 mt-3 custom-btn text-white"}
-                    onClick={() => {onSubmit(msg)}}>Deposit
+                    type={"submit"}>Deposit
                 </Button>
-            </Modal.Footer>
+            </Modal.Body>
         </Modal>)
 }

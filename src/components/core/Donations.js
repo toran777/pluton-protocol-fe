@@ -50,7 +50,7 @@ export function Donations({items, loading}) {
     }
 
     return (
-        <Container className={"mt-4 col-sm-12 col-md-6"}>
+        <Container className={"col-sm-12 pb-3 col-md-8 col-lg-6 col-xl-6"}>
             <h1 className="text-center mt-5 col-12">Incoming Donations</h1>
             <Card.Title className="text-center mt-3">Here's a list of your incoming donations.</Card.Title>
             <Card className={"custom-card mt-5"}>

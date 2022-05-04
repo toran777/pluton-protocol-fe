@@ -51,7 +51,7 @@ export function Payments({items, loading, refresh}) {
         </tr>))
     }
 
-    return (<Container className={"mt-4 col-sm-12 col-md-6"}>
+    return (<Container className={"col-sm-12 pb-3 col-md-8 col-lg-6 col-xl-6"}>
             <h1 className="text-center mt-5 col-12">Outgoing Payments</h1>
             <Card.Title className="text-center mt-3">Here's a list of your outgoing payments.</Card.Title>
             <Card className={"custom-card mt-5"}>
@@ -88,13 +88,11 @@ export function Payments({items, loading, refresh}) {
             <DepositDialog
                 show={modalShowFund}
                 onHide={() => setModalShowFund(false)}
-                onResult={(item) => {
-                    refresh(item)
-                }}/>
+                onResult={refresh}/>
             <WithdrawDialog
                 item={selected}
                 show={modalShowWithdraw}
                 onHide={() => setModalShowWithdraw(false)}
-                onResult={(result) => console.log(result)}/>
+                onResult={refresh}/>
         </Container>)
 }
