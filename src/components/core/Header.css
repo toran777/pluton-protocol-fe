@@ -32,14 +32,6 @@
     font-size: 20px;
 }
 
-.custom-btn-wallet {
-    background-color: black !important;
-    border-radius: 15px !important;
-    height: 35px !important;
-    font-size: 14px !important;
-    font-weight: bold;
-}
-
 .coin-type {
     margin-left: 2px;
     font-weight: bold;
@@ -48,6 +40,16 @@
 .balance-amount {
     margin-left: 10px;
     font-weight: bold;
+}
+
+.custom-search {
+    border: 0;
+    background-color: transparent;
+    margin-right: 10px;
+    border-bottom: 1px solid gray;
+    font-size: 14px;
+    padding: 5px;
+    outline: 0;
 }
 
 .divider {

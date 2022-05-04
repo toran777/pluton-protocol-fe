@@ -1,87 +1,64 @@
-import React, {useEffect, useState} from 'react'
-import Header from '../components/Header'
-import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider"
-import HomePage from "../components/HomePage"
-import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom"
-import Card from "../components/Card"
-import { Profile } from "../components/Profile"
+import React, {useEffect, useState} from 'react';
+import {HomePage} from "../components/core/HomePage";
+import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom";
+import {Profile} from "../components/core/Profile";
+import {Header} from "../components/core/Header";
+import {Donations} from "../components/core/Donations";
+import {Payments} from "../components/core/Payments";
+import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
+import './App.css';
 
 function App() {
-    const [incomingPayments, setIncomingPayments] = useState([])
-    const [outgoingPayments, setOutgoingPayments] = useState([])
-    const [balance, setBalance] = useState()
-    const [walletAddress, setWalletAddress] = useState()
-    const [fetchPayments, setFetchPayments] = useState(true)
-
-    const lcd = useLCDClient();
+    const [balance, setBalance] = useState(0)
+    const [walletAddress, setWalletAddress] = useState("")
+    const [done, setDone] = useState(false)
+    const lcd = useLCDClient()
     const connectedWallet = useConnectedWallet()
-    const depositContract = "terra1hd69jqjm8k5u6q53jm0kxpafgm95zr5faa2hgn"
 
+    function getWalletBalance() {
+        // Query wallet balance
+        const loop = () => {
+            let number = 0
+            lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
+                number = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount)
+
+                if (balance === number) setTimeout(loop, 2000)
+                else setBalance(number)
+            }).catch((error) => console.log(error))
+        }
+
+        loop()
+    }
 
     useEffect(() => {
-        const getPayments = async () => {
+        const queries = async () => {
             if (connectedWallet) {
-                const array = []
+                setDone(false)
+                setWalletAddress(connectedWallet.walletAddress)
 
-                setIncomingPayments(array)
-                setFetchPayments(false)
-
-                setWalletAddress(connectedWallet.walletAddress);
-                // Query wallet balance
-                lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
-                    const balance = Number(coins.toDecCoins().get("uusd").div(1000000).toData().amount);
-                    setBalance(balance.toLocaleString());
-                }).catch((error) => console.log(error));
-                
-                // Query depositor balance
-                lcd.wasm.contractQuery(depositContract, {
-                    depositor_balance: {
-                        address: connectedWallet.walletAddress
-                    }
-                }).then((r) => {
-                    const array = [];
-                    r.map(item => array.push(item[1]));
-                    setOutgoingPayments(array);
-                }).catch((error) => console.log(error));
-
-                // Query beneficiary balance
-                lcd.wasm.contractQuery(depositContract, {
-                    beneficiary_balance: {
-                        address: connectedWallet.walletAddress
-                    }
-                }).then((r) => {
-                    const array = [];
-                    r.map(item => array.push(item[1]));
-                    setIncomingPayments(array);
-                }).catch((error) => console.log(error));
-
+                getWalletBalance()
             }
         }
 
-        fetchPayments && getPayments()
+        !done && queries()
 
-    }, [fetchPayments, connectedWallet, lcd]);
+    }, [done, connectedWallet, lcd])
 
     return (
-        <div style={appStyle} className='App'>
-            <Header walletAddress={walletAddress} balanceAmount={balance}/>
-
+        <div className='App'>
             <Router>
+                <Header walletAddress={walletAddress} balanceAmount={balance}/>
                 <Switch>
                     <Route path="/home">
                         <HomePage/>
                     </Route>
-                    <Route path="/outgoing-payments">
-                        <Card items={outgoingPayments} type={"OUTGOING"}/>
+                    <Route path="/payments">
+                        <Payments onTransaction={getWalletBalance}/>
                     </Route>
-                    <Route path="/incoming-donations">
-                        <Card items={incomingPayments} type={"INCOMING"}/>
+                    <Route path="/donations">
+                        <Donations onTransaction={getWalletBalance}/>
                     </Route>
-                    <Route path="/profile/">
-                        <Profile address = {walletAddress}/>
-                    </Route>
-                    <Route path="/user/">
-                        <Profile address = {walletAddress}/>
+                    <Route path="/profile/:address" component={Profile}>
                     </Route>
                     <Route>
                         <Redirect to="/home"/>
@@ -89,11 +66,7 @@ function App() {
                 </Switch>
             </Router>
         </div>
-    );
-}
-
-const appStyle = {
-    backgroundColor: "#EDEDED", fontFamily: "Poppins, sans-serif", fontWeight: "Bold", height: "100vh"
+    )
 }
 
 export default App;
