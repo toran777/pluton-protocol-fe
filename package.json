@@ -52,7 +52,8 @@
     "react-router-dom": "^5.3.0",
     "react-shimmer": "^3.2.0",
     "spinners-react": "^1.0.7",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "webpack": "^5.72.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.15.0",

@@ -30,7 +30,6 @@ export function AddInfoProfile({show, onHide, onSubmit, oldProfile}) {
             const encodedImage = Buffer.from(result).toString('base64')
             const message = profile
             message['img'] = encodedImage
-            console.log(encodedImage.length)
             setProfile(message)
         })
     }
@@ -40,10 +39,10 @@ export function AddInfoProfile({show, onHide, onSubmit, oldProfile}) {
             show={show}
             onHide={onHide}
             size="md"
-            aria-labelledby="contained-modal-title-vcenter"
+            className={"custom-modal"}
             centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Profile</Modal.Title>
+                <Modal.Title>Profile</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>

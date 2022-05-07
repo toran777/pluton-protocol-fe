@@ -1,16 +1,3 @@
-.wallet-btn {
-    width: 100%;
-    margin-top: 8px;
-    padding: 0 15px 1px 20px;
-    display: flex;
-    align-items: center;
-    border-radius: 30px;
-    border-color: transparent;
-    justify-content: space-between;
-    background-color: #EDEDED;
-    color: #333333;
-}
-
 .wallet-btn img {
     width: 20px;
     height: 20px;
@@ -40,16 +27,6 @@
 .balance-amount {
     margin-left: 10px;
     font-weight: bold;
-}
-
-.custom-search {
-    border: 0;
-    background-color: transparent;
-    margin-right: 10px;
-    border-bottom: 1px solid gray;
-    font-size: 14px;
-    padding: 5px;
-    outline: 0;
 }
 
 .divider {

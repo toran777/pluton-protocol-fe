@@ -53,13 +53,38 @@ export function Donations(onTransaction) {
                 }
                 else {
                     setDonations([...array])
-                    setLoadingDonations(false)
                     setReload(true)
                 }
             }).catch((error) => console.log(error))
         }
 
         loop()
+    }
+
+    function getProfits(donations) {
+        setLoadingDonations(true)
+        const array = []
+
+        for (let i = 0; i < donations.length; i++) {
+            setTimeout(() => {
+                lcd.wasm.contractQuery(contractAddress, {
+                    incoming: {
+                        address: donations[i].depositor_addr,
+                        id: donations[i].id
+                    }
+                }).then((result) => {
+                    donations[i]['claimable'] = result.claimable
+                    array.push(donations[i])
+
+                    if (i === donations.length - 1) {
+                        setCurrentItems([...array])
+                        setLoadingDonations(false)
+                    }
+                }).catch((error) => {
+                    console.error(error)
+                })
+            }, i * 1000)
+        }
     }
 
     let body
@@ -70,7 +95,7 @@ export function Donations(onTransaction) {
                 <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr} target={"_blank"}>{truncateAddress(item.depositor_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
-            <td className={"col-3 text-center"}>{item.beneficiary_amount + " UST"}</td>
+            <td className={"col-3 text-center"}>{item.claimable / 1000000 + "UST /" + item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
                 <Button
                     className={"custom-table-btn text-white"}
@@ -114,7 +139,7 @@ export function Donations(onTransaction) {
                                 <tr className={"col-12"}>
                                     <th className={"col-3"}>From</th>
                                     <th className={"col-3 text-center"}>Amount</th>
-                                    <th className={"col-3 text-center"}>Lock Amount</th>
+                                    <th className={"col-3 text-center"}>Claimable / Lock Amount</th>
                                     <th className={"col-3 text-center"}>Withdraw</th>
                                 </tr>
                                 </thead>
@@ -129,7 +154,7 @@ export function Donations(onTransaction) {
             <Page items={donations}
                   loading={loadingDonations}
                   reload={reload}
-                  onItemsChange={(newItems) => setCurrentItems([...newItems])} />
+                  onItemsChange={getProfits} />
             <div className={"mt-2 pb-5"}></div>
             <WithdrawDialog
                 item={selected}
