@@ -7,7 +7,7 @@ import {contractAddress, truncateAddress} from "../Utility";
 import './Card.css';
 import {useConnectedWallet, useLCDClient} from "@terra-money/wallet-provider";
 
-export function Donations(onTransaction) {
+export function Donations({onTransaction}) {
     const [donations, setDonations] = useState([])
     const [loadingDonations, setLoadingDonations] = useState(true)
     const [done, setDone] = useState(false)
@@ -95,7 +95,7 @@ export function Donations(onTransaction) {
                 <a href={"https://terrasco.pe/mainnet/address/" + item.depositor_addr} target={"_blank"}>{truncateAddress(item.depositor_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
-            <td className={"col-3 text-center"}>{item.claimable / 1000000 + "UST /" + item.beneficiary_amount + " UST"}</td>
+            <td className={"col-3 text-center"}>{item.claimable / 1000000 + " UST / " + item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
                 <Button
                     className={"custom-table-btn text-white"}
@@ -139,7 +139,7 @@ export function Donations(onTransaction) {
                                 <tr className={"col-12"}>
                                     <th className={"col-3"}>From</th>
                                     <th className={"col-3 text-center"}>Amount</th>
-                                    <th className={"col-3 text-center"}>Claimable / Lock Amount</th>
+                                    <th className={"col-3 text-center"}>Claimable / Lock</th>
                                     <th className={"col-3 text-center"}>Withdraw</th>
                                 </tr>
                                 </thead>

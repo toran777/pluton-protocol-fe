@@ -103,7 +103,7 @@ export function Payments({onTransaction}) {
                 <a href={"https://terrasco.pe/mainnet/address/" + item.beneficiary_addr} target={"_blank"}>{truncateAddress(item.beneficiary_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
-            <td className={"col-3 text-center"}>{item.aust_amount / 1000000 + " aUST /" + item.beneficiary_amount + " UST"}</td>
+            <td className={"col-3 text-center"}>{item.aust_amount / 1000000 + " aUST / " + item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
                 <Button
                     className={"custom-table-btn"}
@@ -145,7 +145,7 @@ export function Payments({onTransaction}) {
                             <tr className={"col-12"}>
                                 <th className={"col-3"}>To</th>
                                 <th className={"col-3 text-center"}>Amount</th>
-                                <th className={"col-3 text-center"}>Claimable / Lock Amount</th>
+                                <th className={"col-3 text-center"}>Claimable / Lock</th>
                                 <th className={"col-3 text-center"}>Withdraw</th>
                             </tr>
                             </thead>

@@ -17,14 +17,18 @@ export function ResultDialog({show, msg, result, onHide}) {
                     <div className={"h3 pt-3"}>Complete!</div>
                 </div>
                 <hr className={"custom-hr"} />
-                <div className={"col-12 pt-4 small justify-content-between d-flex"}>
-                    <div className={"col-6"}>Deposit Amount</div>
-                    <div className={"col-6 text-end"}>{msg.amount + " UST"}</div>
-                </div>
-                <div className={"col-12 pt-4 small justify-content-between d-flex"}>
-                    <div className={"col-6"}>Beneficiary Address</div>
-                    <div className={"col-6 text-end"}>{truncateAddress(msg.beneficiaryAddress)}</div>
-                </div>
+                {
+                    msg.amount && <div className={"col-12 pt-4 small justify-content-between d-flex"}>
+                        <div className={"col-6"}>Deposit Amount</div>
+                        <div className={"col-6 text-end"}>{msg.amount + " UST"}</div>
+                    </div>
+                }
+                {
+                    msg.beneficiaryAddress && <div className={"col-12 pt-4 small justify-content-between d-flex"}>
+                        <div className={"col-6"}>Beneficiary Address</div>
+                        <div className={"col-6 text-end"}>{truncateAddress(msg.beneficiaryAddress)}</div>
+                    </div>
+                }
                 <div className={"col-12 pt-4 small justify-content-between d-flex"}>
                     <div className={"col-6"}>Tx Hash</div>
                     <div className={"col-6 text-end"}>

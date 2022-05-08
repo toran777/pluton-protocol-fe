@@ -4,7 +4,7 @@ import {useState} from "react";
 import {validateInputFund} from "../Utility";
 
 export function AddInfoDialog({show, onHide, onSubmit, hideLockAmount, address = ''}) {
-    const [msg, setMsg] = useState({beneficiaryAddress: '', lockAmount: '', amount: ''})
+    const [msg, setMsg] = useState({beneficiaryAddress: address, lockAmount: '0', amount: '0'})
     const [errors, setErrors] = useState({lockAmount: false, amount: false, address: false})
     const [validated, setValidated] = useState(false)
 
@@ -43,7 +43,7 @@ export function AddInfoDialog({show, onHide, onSubmit, hideLockAmount, address =
             </Modal.Header>
             <Modal.Body>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3" controlId="validationCustom03">
+                    <Form.Group className="mb-3">
                         <Form.Label>Beneficiary Address</Form.Label>
                         <Form.Control
                             onChange={(event) => onTextChange(event, 'beneficiaryAddress')}
@@ -52,9 +52,9 @@ export function AddInfoDialog({show, onHide, onSubmit, hideLockAmount, address =
                             type={"text"}
                             readOnly={address.length > 0}
                             defaultValue={address}
-                            isInvalid={msg.address === undefined || msg.address.length !== 44}
+                            isInvalid={errors.address}
                         />
-                        <Form.Control.Feedback type="invalid">
+                        <Form.Control.Feedback type={"invalid"}>
                             Terra address is not valid!
                         </Form.Control.Feedback>
                     </Form.Group>
