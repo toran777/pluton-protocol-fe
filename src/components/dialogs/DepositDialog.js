@@ -5,7 +5,7 @@ import {ResultDialog} from "./ResultDialog";
 import {ErrorDialog} from "./ErrorDialog";
 import {AddInfoDialog} from "./AddInfoDialog";
 
-export function DepositDialog({show, onHide, onResult, hideLockAmount = false, address=''}) {
+export function DepositDialog({show, onHide, onResult = () => {}, hideLockAmount = false, address=''}) {
     const [msg, setMsg] = useState({beneficiaryAddress: "", lockAmount: "", amount: ""})
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState({txHash: ""})

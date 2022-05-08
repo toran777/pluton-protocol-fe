@@ -58,10 +58,41 @@ export function Payments({onTransaction}) {
                     setReload(true)
                 }
 
-            }).catch((error) => console.log(error))
+            }).catch((error) => console.error(error))
         }
 
         loop()
+    }
+
+    function getProfits(payments) {
+        setLoadingPayments(true)
+        const array = []
+
+        for (let i = 0; i < payments.length; i++) {
+            setTimeout(() => {
+                lcd.wasm.contractQuery(contractAddress, {
+                    outgoing: {
+                        address: payments[i].beneficiary_addr,
+                        id: payments[i].id
+                    }
+                }).then((result) => {
+                    payments[i]['aust_amount'] = result.aust_amount
+                    array.push(payments[i])
+
+                    if (i === payments.length - 1) {
+                        setCurrentItems([...array])
+                        setLoadingPayments(false)
+                    }
+                }).catch((error) => {
+                    console.error(error)
+
+                    if (i === payments.length - 1) {
+                        setCurrentItems([...array])
+                        setLoadingPayments(false)
+                    }
+                })
+            }, i * 1000)
+        }
     }
 
     let body
@@ -72,7 +103,7 @@ export function Payments({onTransaction}) {
                 <a href={"https://terrasco.pe/mainnet/address/" + item.beneficiary_addr} target={"_blank"}>{truncateAddress(item.beneficiary_addr)}</a>
             </td>
             <td className={"col-3 text-center"}>{item.amount / 1000000 + " UST"}</td>
-            <td className={"col-3 text-center"}>{item.beneficiary_amount + " UST"}</td>
+            <td className={"col-3 text-center"}>{item.aust_amount / 1000000 + " aUST / " + item.beneficiary_amount + " UST"}</td>
             <td className={"col-3 text-center"}>
                 <Button
                     className={"custom-table-btn"}
@@ -114,7 +145,7 @@ export function Payments({onTransaction}) {
                             <tr className={"col-12"}>
                                 <th className={"col-3"}>To</th>
                                 <th className={"col-3 text-center"}>Amount</th>
-                                <th className={"col-3 text-center"}>Lock Amount</th>
+                                <th className={"col-3 text-center"}>Claimable / Lock</th>
                                 <th className={"col-3 text-center"}>Withdraw</th>
                             </tr>
                             </thead>
@@ -128,9 +159,7 @@ export function Payments({onTransaction}) {
             <Page items={payments}
                   loading={loadingPayments}
                   reload={reload}
-                  onItemsChange={(newItems) => {
-                      setCurrentItems([...newItems])
-                  }}/>
+                  onItemsChange={getProfits}/>
             <div className={"row mt-2 pb-5 justify-content-center"}>
                 <div className={"col-5"}></div>
                 <Button variant={"contained"}
